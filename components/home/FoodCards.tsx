@@ -20,7 +20,7 @@ const FoodCards = ({item}:{item:FoodItem}) => {
        <div className="border p-4 rounded-lg shadow-md items-center flex flex-col h-full">
           <h2 className="text-lg font-semibold">{item.name}</h2>
           <p className="text-gray-500">Price: KES {item.price}</p>
-          <Button className='bg-green-500 my-4' onClick={()=>addToCart(item)}>Add to cart</Button>
+          <Button className='bg-orange-1 my-4' onClick={()=>addToCart(item)}>Add to cart</Button>
         </div>
     </div>
   )
