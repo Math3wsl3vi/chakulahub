@@ -32,7 +32,7 @@ const MenuSection = () => {
             <h3 className="mt-2 font-semibold">{meal.name}</h3>
             <p className="text-sm text-gray-600">{meal.description}</p>
             <p className="mt-2 font-bold text-orange-500">Ksh {meal.price}</p>
-            <button className="mt-2 w-full bg-orange-1 text-white p-2 rounded">Book Now</button>
+            <button className="mt-2 w-full bg-black text-white p-2 rounded">Order Meal</button>
           </div>
         ))}
       </div>
