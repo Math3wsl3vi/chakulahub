@@ -1,6 +1,4 @@
 import React from "react";
-import FoodCards from "./FoodCards";
-import { FoodItems } from "@/lib/data";
 import { Button } from "../ui/button";
 
 const Hero = () => {
@@ -13,11 +11,11 @@ const Hero = () => {
        <Button className="bg-black text-lg h-12">View Menu</Button>
        </div>
       <div>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 p-4 mb-20">
+        {/* <div className="grid grid-cols-2 md:grid-cols-5 gap-4 p-4 mb-20">
         {FoodItems.map((item) => (
           <FoodCards key={item.id} item={item} />
         ))}
-      </div>
+      </div> */}
       </div>
     </div>
   );

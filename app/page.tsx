@@ -1,3 +1,4 @@
+import MenuSection from "@/components/foodSection/MenuSection";
 import Hero from "@/components/home/Hero";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
@@ -9,7 +10,11 @@ export default function Home() {
       {/* main page */}
       <div>
         <Hero />
-      </div>{" "}
+      </div>
+      {/* breakfast */}
+      <MenuSection/>
+      {/* lunch */}
+      {/* dinner */}
       {/* bottom bar */}
       
     </div>
