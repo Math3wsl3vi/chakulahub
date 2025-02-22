@@ -13,6 +13,7 @@ type Meal = {
   name: string;
   category: "Breakfast" | "Lunch" | "Supper";
   price: number;
+  quantity:number;
 };
 
 const MenuSection = () => {
@@ -23,14 +24,18 @@ const MenuSection = () => {
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
   const { toast } = useToast()
+
   useEffect(() => {
     const fetchMeals = async () => {
       try {
         const mealsSnapshot = await getDocs(collection(db, "meals"));
-        const mealList: Meal[] = mealsSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...(doc.data() as Omit<Meal, "id">),
-        }));
+        const mealList: Meal[] = mealsSnapshot.docs
+          .map((doc) => ({
+            id: doc.id,
+            ...(doc.data() as Omit<Meal, "id">),
+          }))
+          .filter((meal) => meal.quantity > 0); // Exclude meals with quantity 0
+  
         setMeals(mealList);
       } catch (error) {
         console.error("Error fetching meals:", error);
@@ -38,7 +43,7 @@ const MenuSection = () => {
         setLoading(false);
       }
     };
-
+  
     fetchMeals();
   }, []);
   const placeOrder = async (meal: Meal) => {
