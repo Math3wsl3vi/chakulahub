@@ -161,7 +161,7 @@ const Reviews = () => {
             <p><strong>Review:</strong> {review.reviewText}</p>
             <p><strong>Rating:</strong> {review.rating}/5</p>
             <p><strong>Response:</strong> {review.adminResponse || "No response yet"}</p>
-            {user?.isAdmin && (
+            {user && user?.isAdmin && (
               <div className="mt-2">
                 <Textarea
                   placeholder="Write a response..."

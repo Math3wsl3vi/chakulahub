@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
+  const { user, loading } = useAuth(); // ✅ Now loading is correctly defined
   const router = useRouter();
 
   useEffect(() => {
@@ -15,7 +15,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
   }, [user, loading, router]);
 
   if (loading) return <p className="text-center text-gray-500">Loading...</p>; // Prevent flickering
-  if (!user) return null; // Ensures UI does not briefly render before redirect
+  if (!user) return null; // Prevents UI from rendering before redirect
 
   return <>{children}</>;
 }
