@@ -10,7 +10,7 @@ const AdminDashboard = () => {
         <Link href="/admin/meals">
           <div className="border p-4 text-center cursor-pointer">Manage Meals</div>
         </Link>
-        <Link href="/admin/meals">
+        <Link href="/admin/orders">
           <div className="border p-4 text-center cursor-pointer">{"Today's"} Orders</div>
         </Link>
         

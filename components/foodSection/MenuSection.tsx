@@ -1,7 +1,10 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
+import React, { useEffect, useState } from "react";
 import { db } from "@/configs/firebaseConfig";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, getDocs } from "firebase/firestore";
+import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { useAuth } from "@/context/AuthContext";
 
 type Meal = {
   id: string;
@@ -11,10 +14,12 @@ type Meal = {
 };
 
 const MenuSection = () => {
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<"Breakfast" | "Lunch" | "Supper">("Breakfast");
   const [meals, setMeals] = useState<Meal[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const { user } = useAuth();
   useEffect(() => {
     const fetchMeals = async () => {
       try {
@@ -30,8 +35,32 @@ const MenuSection = () => {
         setLoading(false);
       }
     };
+
     fetchMeals();
   }, []);
+
+  const placeOrder = async (meal: Meal) => {
+    try {
+      if (!user) {
+        alert("User not found! Please log in.");
+        return;
+      }
+  
+      await addDoc(collection(db, "orders"), {
+        userEmail: user.email || "Unknown User", // Store user's name
+        mealName: meal.name,
+        price: meal.price,
+        status: "pending",
+        createdAt: serverTimestamp(),
+      });
+  
+      setSelectedMeal(meal);
+      setIsCheckoutOpen(true);
+    } catch (error) {
+      console.error("Error placing order:", error);
+      alert("Failed to place order.");
+    }
+  };
 
   return (
     <div>
@@ -47,25 +76,52 @@ const MenuSection = () => {
             }`}
             onClick={() => setSelectedCategory(category as "Breakfast" | "Lunch" | "Supper")}
           >
-            {category.charAt(0).toUpperCase() + category.slice(1)}
+            {category}
           </div>
         ))}
       </div>
 
-      {/* Loading state */}
+      {/* Meals Display */}
       {loading ? (
         <p className="text-center mt-5">Loading meals...</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 px-10 mt-6 mb-20">
-          {meals.filter((meal) => meal.category === selectedCategory).map((meal) => (
-            <div key={meal.id} className="border p-4 rounded-lg shadow">
-              <h3 className="mt-2 font-semibold capitalize">{meal.name}</h3>
-              <p className="mt-2 font-bold text-orange-500 text-xl">Ksh {meal.price}</p>
-              <button className="mt-2 w-full bg-black text-white p-2 rounded">Order Meal</button>
-            </div>
-          ))}
+          {meals
+            .filter((meal) => meal.category === selectedCategory)
+            .map((meal) => (
+              <div key={meal.id} className="border p-4 rounded-lg shadow">
+                <h3 className="mt-2 font-semibold">{meal.name}</h3>
+                <p className="mt-2 font-bold text-orange-500">Ksh {meal.price}</p>
+                <button
+                  className="mt-2 w-full bg-black text-white p-2 rounded"
+                  onClick={() => placeOrder(meal)}
+                >
+                  Order Meal
+                </button>
+              </div>
+            ))}
         </div>
       )}
+
+      {/* Checkout Dialog */}
+      <Dialog open={isCheckoutOpen} onOpenChange={setIsCheckoutOpen}>
+        <DialogTrigger asChild></DialogTrigger>
+        <DialogContent className="p-5">
+          <DialogTitle>Checkout</DialogTitle>
+          {selectedMeal && (
+            <div className="mt-4">
+              <p><strong>Meal:</strong> {selectedMeal.name}</p>
+              <p><strong>Price:</strong> Ksh {selectedMeal.price}</p>
+              <button 
+                className="mt-4 w-full bg-orange-500 text-white p-2 rounded" 
+                onClick={() => setIsCheckoutOpen(false)}
+              >
+                Confirm & Close
+              </button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
