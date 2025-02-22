@@ -165,11 +165,11 @@ const Reviews = () => {
   };
 
   return (
-    <div className="p-6 border rounded-md">
+    <div className="p-6 border rounded-md md:w-1/3">
       <h1 className="text-2xl font-bold mb-4">Meal Reviews</h1>
       <div className="mb-6">
         <DropdownMenu>
-          <DropdownMenuTrigger className="border p-2 w-full bg-white text-left">
+          <DropdownMenuTrigger className="border p-2 w-full md:w-1/3 bg-white text-left">
             {selectedMeal ? selectedMeal.name : "Choose a meal to review"}
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-full">

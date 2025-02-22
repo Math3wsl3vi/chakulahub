@@ -57,7 +57,7 @@ const Navbar = () => {
       <Link href={"/"} className="cursor-pointer">
         <Image src="/images/logo.png" alt="logo" width={40} height={40} />
       </Link>
-      <h1 className="text-xl uppercase font-poppins font-semibold">Chakula Hub</h1>
+      <h1 className="text-xl uppercase font-poppins font-semibold">ChakulaHub</h1>
       <div className="flex gap-2">
         {!loading && isAdmin && (
           <Button className="bg-orange-1" onClick={() => router.push("/admin")}>
