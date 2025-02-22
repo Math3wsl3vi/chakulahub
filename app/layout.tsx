@@ -7,8 +7,9 @@ import { AuthProvider } from "@/context/AuthContext";
 
 
 export const metadata: Metadata = {
-  title: "Chakula Hub",
+  title: "Chakulahub",
   description: "Meal Booking Platform",
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
