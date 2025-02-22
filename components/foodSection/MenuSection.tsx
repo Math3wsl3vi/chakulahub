@@ -5,6 +5,7 @@ import { db } from "@/configs/firebaseConfig";
 import { collection, addDoc, serverTimestamp, getDocs, doc, getDoc, updateDoc } from "firebase/firestore";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/context/AuthContext";
+import Loader from "../Loader";
 
 type Meal = {
   id: string;
@@ -101,7 +102,7 @@ const MenuSection = () => {
 
       {/* Meals Display */}
       {loading ? (
-        <p className="text-center mt-5">Loading meals...</p>
+        <div className="text-center mt-5 flex items-center justify-center"><Loader/> Loading meals...</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 px-10 mt-6 mb-20">
           {meals
