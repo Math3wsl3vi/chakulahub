@@ -21,7 +21,7 @@ const Footer = () => {
         <div>
           <h1 className='text-xl font-semibold'>Links</h1>
           <ul>
-            <li><Link href={'/'} className='text-sm md:text-lg'>FAQS</Link></li>
+            <li><Link href={'/faqs'} className='text-sm md:text-lg'>FAQS</Link></li>
             <li><Link href={'/'} className='text-sm md:text-lg'>About us</Link></li>
             <li><Link href={'/'} className='text-sm md:text-lg'>Terms and conditions</Link></li>
           </ul>

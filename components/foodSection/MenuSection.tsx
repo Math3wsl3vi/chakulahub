@@ -6,6 +6,7 @@ import { collection, addDoc, serverTimestamp, getDocs, doc, getDoc, updateDoc } 
 import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/context/AuthContext";
 import Loader from "../Loader";
+import { useToast } from "@/hooks/use-toast";
 
 type Meal = {
   id: string;
@@ -21,6 +22,7 @@ const MenuSection = () => {
   const [meals, setMeals] = useState<Meal[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  const { toast } = useToast()
   useEffect(() => {
     const fetchMeals = async () => {
       try {
@@ -39,11 +41,15 @@ const MenuSection = () => {
 
     fetchMeals();
   }, []);
-
   const placeOrder = async (meal: Meal) => {
     try {
       if (!user) {
         alert("User not found! Please log in.");
+        return;
+      }
+  
+      if (!meal.id) {
+        alert("Meal ID is missing!");
         return;
       }
   
@@ -55,13 +61,14 @@ const MenuSection = () => {
         return;
       }
   
-      const currentQuantity = mealSnapshot.data().quantity;
+      const currentQuantity = mealSnapshot.data()?.quantity ?? 0;
   
       if (currentQuantity <= 0) {
         alert("Sorry, this meal is out of stock.");
         return;
       }
   
+      // Add the order
       await addDoc(collection(db, "orders"), {
         userEmail: user.email || "Unknown User",
         mealName: meal.name,
@@ -80,6 +87,36 @@ const MenuSection = () => {
       alert("Failed to place order.");
     }
   };
+  
+
+  const handlePayment = async () => {
+    try {
+      const response = await fetch("/api/mpesa/stkpush", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone: "254717271815", // Replace with the actual phone number
+          amount: 1, // Replace with the actual amount
+        }),
+      });
+  
+      const data = await response.json();
+      
+      if (response.ok) {
+        toast({description:"Payment request sent. Please check your phone."});
+        console.log("STK Push Response:", data);
+      } else {
+        toast({description:"Failed to initiate payment."});
+        console.error("Error:", data);
+      }
+    } catch (error) {
+      console.error("Payment error:", error);
+      toast({description:"Something went wrong. Please try again."});
+    }
+  };
+  
+  
+  
 
   return (
     <div className="">
@@ -113,7 +150,10 @@ const MenuSection = () => {
                 <p className="mt-2 font-bold text-orange-500">Ksh {meal.price}</p>
                 <button
                   className="mt-2 w-full bg-black text-white p-2 rounded"
-                  onClick={() => placeOrder(meal)}
+                  onClick={() => {
+                    handlePayment()
+                    placeOrder(meal)
+                  }}
                 >
                   Order Meal
                 </button>
@@ -125,7 +165,7 @@ const MenuSection = () => {
       {/* Checkout Dialog */}
       <Dialog open={isCheckoutOpen} onOpenChange={setIsCheckoutOpen}>
         <DialogTrigger asChild></DialogTrigger>
-        <DialogContent className="p-5 m-4">
+        <DialogContent className="p-5 mx-4">
           <DialogTitle>Checkout</DialogTitle>
           {selectedMeal && (
             <div className="mt-4">
@@ -135,7 +175,7 @@ const MenuSection = () => {
                 className="mt-4 w-full bg-orange-500 text-white p-2 rounded" 
                 onClick={() => setIsCheckoutOpen(false)}
               >
-                Confirm & Close
+                Confirm & Pay
               </button>
             </div>
           )}
