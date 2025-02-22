@@ -1,9 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/configs/firebaseConfig";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { db } from "@/configs/firebaseConfig";
 
 type Meal ={
     id:string;

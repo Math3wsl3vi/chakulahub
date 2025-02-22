@@ -19,6 +19,7 @@ const Navbar = () => {
         const adminSnap = await getDoc(adminRef);
         if (adminSnap.exists()) {
           setIsAdmin(true);
+          console.log('user is admin')
         }
       } catch (error) {
         console.error("Error checking admin status:", error);
