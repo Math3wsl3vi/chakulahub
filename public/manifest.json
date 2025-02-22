@@ -1,6 +1,6 @@
 {
     "name": "ChakulaHub",
-    "short_name": "Chakula",
+    "short_name": "ChakulaHub",
     "description": "Meal booking platform",
     "start_url": "/",
     "display": "standalone",
