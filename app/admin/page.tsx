@@ -10,15 +10,10 @@ const AdminDashboard = () => {
         <Link href="/admin/meals">
           <div className="border p-4 text-center cursor-pointer">Manage Meals</div>
         </Link>
-        <Link href="/admin/bookings">
-          <div className="border p-4 text-center cursor-pointer">User Bookings</div>
+        <Link href="/admin/meals">
+          <div className="border p-4 text-center cursor-pointer">{"Today's"} Orders</div>
         </Link>
-        <Link href="/admin/payments">
-          <div className="border p-4 text-center cursor-pointer">Payments</div>
-        </Link>
-        <Link href="/admin/users">
-          <div className="border p-4 text-center cursor-pointer">Manage Users</div>
-        </Link>
+        
       </div>
     </div>
   );

@@ -10,6 +10,7 @@ type Meal ={
     name:string;
     category:string;
     price:number;
+    quantity:number;
 }
 
 const AdminMeals = () => {
@@ -45,6 +46,7 @@ const AdminMeals = () => {
           <tr>
             <th className="border px-4 py-2">Meal</th>
             <th className="border px-4 py-2">Category</th>
+            <th className="border px-4 py-2">Quantity</th>
             <th className="border px-4 py-2">Price</th>
           </tr>
         </thead>
@@ -53,6 +55,7 @@ const AdminMeals = () => {
             <tr key={meal.id}>
               <td className="border px-4 py-2">{meal.name}</td>
               <td className="border px-4 py-2">{meal.category}</td>
+              <td className="border px-4 py-2">{meal.quantity}</td>
               <td className="border px-4 py-2">Ksh {meal.price}</td>
             </tr>
           ))}

@@ -5,11 +5,13 @@ import { collection, addDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 
 const AddMeal = () => {
-  const router = useRouter()
+  const router = useRouter();
+
   const [meal, setMeal] = useState({
     name: "",
     category: "Breakfast",
     price: "",
+    quantity: "", // Added quantity
   });
 
   const [loading, setLoading] = useState(false);
@@ -25,10 +27,14 @@ const AddMeal = () => {
     setMessage("");
 
     try {
-      await addDoc(collection(db, "meals"), meal);
+      await addDoc(collection(db, "meals"), {
+        ...meal,
+        price: Number(meal.price), // Ensure price is stored as a number
+        quantity: Number(meal.quantity), // Ensure quantity is stored as a number
+      });
       setMessage("Meal added successfully!");
-      setMeal({ name: "", category: "Breakfast", price: "" });
-      router.push('/admin/meals')
+      setMeal({ name: "", category: "Breakfast", price: "", quantity: "" });
+      router.push("/admin/meals");
     } catch (error) {
       setMessage("Failed to add meal. Check console for errors.");
       console.error("Error adding meal:", error);
@@ -68,6 +74,18 @@ const AddMeal = () => {
           </select>
         </div>
         <div>
+          <label className="block text-sm font-medium">Quantity</label>
+          <input
+            type="number"
+            name="quantity"
+            value={meal.quantity}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border rounded"
+          />
+        </div>
+
+        <div>
           <label className="block text-sm font-medium">Price (KES)</label>
           <input
             type="number"
@@ -78,11 +96,7 @@ const AddMeal = () => {
             className="w-full p-2 border rounded"
           />
         </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-black text-white py-2 rounded"
-        >
+        <button type="submit" disabled={loading} className="w-full bg-black text-white py-2 rounded">
           {loading ? "Adding..." : "Add Meal"}
         </button>
       </form>

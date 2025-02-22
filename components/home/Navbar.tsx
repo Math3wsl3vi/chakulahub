@@ -15,18 +15,23 @@ const Navbar = () => {
   useEffect(() => {
     const checkAdmin = async (userId: string) => {
       try {
+        console.log("Checking admin status for:", userId);
         const adminRef = doc(db, "admins", userId);
         const adminSnap = await getDoc(adminRef);
+        
         if (adminSnap.exists()) {
           setIsAdmin(true);
-          console.log('user is admin')
+          console.log("✅ User is an admin");
+        } else {
+          console.log("❌ User is NOT an admin");
         }
       } catch (error) {
-        console.error("Error checking admin status:", error);
+        console.error("⚠️ Error checking admin status:", error);
       } finally {
         setLoading(false);
       }
     };
+    
 
     // Ensure we track authentication changes
     const unsubscribe = auth.onAuthStateChanged((user) => {
