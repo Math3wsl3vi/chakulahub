@@ -165,7 +165,8 @@ const Reviews = () => {
   };
 
   return (
-    <div className="p-6 border rounded-md md:w-1/3">
+    <div className="md:flex md:justify-center md:items-center">
+    <div className="p-6 border rounded-md md:w-1/3 ">
       <h1 className="text-2xl font-bold mb-4">Meal Reviews</h1>
       <div className="mb-6">
         <DropdownMenu>
@@ -225,6 +226,7 @@ const Reviews = () => {
       ) : (
         <p>No reviews yet.</p>
       )}
+    </div>
     </div>
   );
 };

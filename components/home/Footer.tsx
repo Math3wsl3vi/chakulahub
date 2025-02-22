@@ -4,16 +4,16 @@ import React from 'react'
 
 const Footer = () => {
   return (
-    <div className='w-full min-h-32 border-t shadow-sm rounded-t-md px-10'>
-      <div className='flex flex-row justify-between items-center mt-5'>
+    <div className='w-full min-h-32 border-t shadow-sm rounded-t-md px-4 md:flex md:flex-col md:items-center md:justify-center'>
+      <div className='flex flex-row justify-between items-center md:gap-20 mt-5'>
         <div>
           <h1 className='font-semibold text-xl'>CHAKULAHUB</h1>
-          <p className='text-lg'>Contact us</p>
-          <div className='text-lg flex gap-2'>
+          <p className='text-sm'>Contact us</p>
+          <div className='text-sm md:text-lg flex gap-2'>
             <p>Email us:</p>
             <Link href={'/'}>chakulahub@gmail.com</Link>
             </div>
-            <div className='text-lg flex gap-2'>
+            <div className='text-smmd:text-lg  flex gap-2'>
             <p>Call us:</p>
             <Link href={'/'}>071234567890</Link>
             </div>
@@ -21,9 +21,9 @@ const Footer = () => {
         <div>
           <h1 className='text-xl font-semibold'>Links</h1>
           <ul>
-            <li><Link href={'/'}>FAQS</Link></li>
-            <li><Link href={'/'}>About us</Link></li>
-            <li><Link href={'/'}>Terms and conditions</Link></li>
+            <li><Link href={'/'} className='text-sm md:text-lg'>FAQS</Link></li>
+            <li><Link href={'/'} className='text-sm md:text-lg'>About us</Link></li>
+            <li><Link href={'/'} className='text-sm md:text-lg'>Terms and conditions</Link></li>
           </ul>
         </div>
         </div>
