@@ -6,7 +6,7 @@ import {
     collection, addDoc, getDocs, serverTimestamp, Timestamp, 
     doc as firestoreDoc, updateDoc, getDoc, 
     doc
-  } from "firebase/firestore";
+} from "firebase/firestore";
 import { useAuth } from "@/context/AuthContext";
 import {
   DropdownMenu,
@@ -37,13 +37,30 @@ type Review = {
 
 const Reviews = () => {
   const { user } = useAuth();
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);  // Track admin status
   const [meals, setMeals] = useState<Meal[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [reviewText, setReviewText] = useState("");
   const [rating, setRating] = useState<number>(5);
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
   const [adminResponses, setAdminResponses] = useState<{ [key: string]: string }>({});
-  const { toast } = useToast()
+  const [showAll, setShowAll] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const checkIfAdmin = async () => {
+      if (!user) return;
+  
+      try {
+        const adminDoc = await getDoc(firestoreDoc(db, "admins", user.uid));
+        setIsAdmin(adminDoc.exists()); // If the doc exists, the user is an admin
+      } catch (error) {
+        console.error("Error checking admin status:", error);
+      }
+    };
+  
+    checkIfAdmin();
+  }, [user]);
 
   useEffect(() => {
     const fetchMeals = async () => {
@@ -58,10 +75,10 @@ const Reviews = () => {
   
     fetchMeals();
   }, []);
-  
+
   useEffect(() => {
-    if (meals.length === 0) return; // Ensure meals are loaded before fetching reviews
-  
+    if (meals.length === 0) return; 
+
     const fetchReviews = async () => {
       try {
         const reviewsSnapshot = await getDocs(collection(db, "reviews"));
@@ -76,24 +93,25 @@ const Reviews = () => {
             return { id: reviewDoc.id, ...reviewData, userEmail, mealName: meal?.name || "Unknown Meal" };
           })
         );
+
         setReviews(reviewList);
       } catch (error) {
         console.error("Error fetching reviews:", error);
       }
     };
-  
+
     fetchReviews();
-  }, [meals]); // Fetch reviews only after meals are loaded
-  
+  }, [meals]);
+
   const submitReview = async () => {
     if (!user || !selectedMeal || !reviewText) {
-      toast({description:"Please fill in all fields."});
+      toast({ description: "Please fill in all fields." });
       return;
     }
     try {
       await addDoc(collection(db, "reviews"), {
         userId: user.uid,
-        userEmail:user.email,
+        userEmail: user.email,
         mealId: selectedMeal.id,
         reviewText,
         rating,
@@ -103,7 +121,7 @@ const Reviews = () => {
       setReviewText("");
       setRating(5);
       setSelectedMeal(null);
-      toast({description:"Review submitted!"});
+      toast({ description: "Review submitted!" });
     } catch (error) {
       console.error("Error submitting review:", error);
     }
@@ -114,16 +132,35 @@ const Reviews = () => {
   };
 
   const submitAdminResponse = async (reviewId: string) => {
-    if (!adminResponses[reviewId]) {
-      alert("Response cannot be empty.");
+    if (!isAdmin) {
+      toast({ description: "You are not authorized to respond to reviews." });
       return;
     }
+  
+    if (!adminResponses[reviewId]) {
+      toast({ description: "Response cannot be empty." });
+      return;
+    }
+  
     try {
-      await updateDoc(doc(db, "reviews", reviewId), { adminResponse: adminResponses[reviewId] });
-      setReviews((prev) => prev.map((r) => (r.id === reviewId ? { ...r, adminResponse: adminResponses[reviewId] } : r)));
-      alert("Response submitted!");
+      await updateDoc(doc(db, "reviews", reviewId), {
+        adminResponse: adminResponses[reviewId],
+      });
+  
+      // Update the state to reflect the new response and clear the textarea
+      setReviews((prev) =>
+        prev.map((r) =>
+          r.id === reviewId ? { ...r, adminResponse: adminResponses[reviewId] } : r
+        )
+      );
+  
+      // Clear the textarea after submission
+      setAdminResponses((prev) => ({ ...prev, [reviewId]: "" }));
+  
+      toast({ description: "Response submitted!" });
     } catch (error) {
       console.error("Error updating response:", error);
+      toast({ description: "Failed to submit response.", variant: "destructive" });
     }
   };
 
@@ -153,29 +190,38 @@ const Reviews = () => {
           Submit Review
         </Button>
       </div>
+
       {reviews.length > 0 ? (
-        reviews.map((review) => (
-          <div key={review.id} className="border p-4 mb-4 rounded">
-            <p><strong>User:</strong> {review.userEmail}</p>
-            <p><strong>Meal:</strong> {review.mealName}</p>
-            <p><strong>Review:</strong> {review.reviewText}</p>
-            <p><strong>Rating:</strong> {review.rating}/5</p>
-            <p><strong>Response:</strong> {review.adminResponse || "No response yet"}</p>
-            {user && user?.isAdmin && (
-              <div className="mt-2">
-                <Textarea
-                  placeholder="Write a response..."
-                  value={adminResponses[review.id] || ""}
-                  onChange={(e) => handleAdminResponseChange(review.id, e.target.value)}
-                  className="border p-2 w-full bg-white"
-                />
-                <Button className="bg-orange-1 text-white px-4 py-2 rounded mt-2" onClick={() => submitAdminResponse(review.id)}>
-                  Submit Response
-                </Button>
-              </div>
-            )}
-          </div>
-        ))
+        <>
+          {reviews.slice(0, showAll ? reviews.length : 2).map((review) => (
+            <div key={review.id} className="border p-4 mb-4 rounded">
+              <p><strong>User:</strong> {review.userEmail}</p>
+              <p><strong>Meal:</strong> {review.mealName}</p>
+              <p><strong>Review:</strong> {review.reviewText}</p>
+              <p><strong>Rating:</strong> {review.rating}/5</p>
+              <p><strong>Response:</strong> {review.adminResponse || "No response yet"}</p>
+              {isAdmin && (
+                <div className="mt-2">
+                  <Textarea
+                    placeholder="Write a response..."
+                    value={adminResponses[review.id] || ""}
+                    onChange={(e) => handleAdminResponseChange(review.id, e.target.value)}
+                    className="border p-2 w-full bg-white"
+                  />
+                  <Button className="bg-orange-1 text-white px-4 py-2 rounded mt-2" 
+                    onClick={() => submitAdminResponse(review.id)}>
+                    Submit Response
+                  </Button>
+                </div>
+              )}
+            </div>
+          ))}
+
+          <Button className="bg-orange-500 text-white px-4 py-2 rounded mt-2 w-full" 
+            onClick={() => setShowAll(!showAll)}>
+            {showAll ? "Show Less" : "View More"}
+          </Button>
+        </>
       ) : (
         <p>No reviews yet.</p>
       )}

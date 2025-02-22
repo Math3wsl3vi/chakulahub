@@ -124,7 +124,7 @@ const MenuSection = () => {
       {/* Checkout Dialog */}
       <Dialog open={isCheckoutOpen} onOpenChange={setIsCheckoutOpen}>
         <DialogTrigger asChild></DialogTrigger>
-        <DialogContent className="p-5">
+        <DialogContent className="p-5 m-4">
           <DialogTitle>Checkout</DialogTitle>
           {selectedMeal && (
             <div className="mt-4">
