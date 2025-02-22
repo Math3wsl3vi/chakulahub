@@ -17,25 +17,33 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<CustomUser | null>(null);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      setLoading(true); // Ensure loading is true at the start
+  
       if (firebaseUser) {
-        const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
-        const userData = userDoc.exists() ? userDoc.data() : {};
-
-        setUser({
-          ...firebaseUser,
-          isAdmin: userData.isAdmin || false, // ✅ No more TypeScript errors
-        });
+        let isAdmin = false;
+  
+        try {
+          const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
+          if (userDoc.exists()) {
+            isAdmin = userDoc.data().isAdmin || false;
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+  
+        setUser({ ...firebaseUser, isAdmin });
       } else {
         setUser(null);
       }
-      setLoading(false);
+  
+      setLoading(false); // Set loading false after state update
     });
-
+  
     return () => unsubscribe();
   }, []);
+  
 
   return <AuthContext.Provider value={{ user, loading }}>{children}</AuthContext.Provider>;
 };

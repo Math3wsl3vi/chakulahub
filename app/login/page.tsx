@@ -1,15 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import {
   createUserWithEmailAndPassword,
@@ -20,11 +10,22 @@ import {
 import type { User } from "firebase/auth";
 import { auth } from "@/configs/firebaseConfig";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 const LoginPage = () => {
   const [isLogin, setIsLogin] = useState(false);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true); // 🔹 New state to track auth status
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -32,14 +33,16 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [resetSuccess, setResetSuccess] = useState("");
 
+  // ✅ Only navigate if user is found
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        router.push("/");
+        router.replace("/"); // 🔹 Prevents multiple redirects
       }
+      setAuthLoading(false); // 🔹 Ensure UI loads after check
     });
 
-    return () => unsubscribe(); // Clean up listener
+    return () => unsubscribe();
   }, [router]);
 
   const handleAuth = async (event: React.FormEvent) => {
@@ -62,7 +65,7 @@ const LoginPage = () => {
         JSON.stringify({ uid: user.uid, email: user.email })
       );
 
-      router.push("/");
+      router.replace("/");
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -83,7 +86,7 @@ const LoginPage = () => {
     try {
       await sendPasswordResetEmail(auth, email);
       setResetSuccess("Password reset link sent! Check your email.");
-      setError(""); // Clear previous errors
+      setError("");
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -92,6 +95,15 @@ const LoginPage = () => {
       }
     }
   };
+
+  // ✅ Prevent rendering while checking auth state
+  if (authLoading) {
+    return (
+      <div className="flex justify-center items-center w-full h-screen">
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex justify-center items-center w-full h-screen">
