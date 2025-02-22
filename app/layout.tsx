@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/home/Navbar";
-import BottomBar from "@/components/home/BottomBar";
+// import BottomBar from "@/components/home/BottomBar";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/context/AuthContext";
 
@@ -44,7 +44,7 @@ export default function RootLayout({
         <Toaster/>
         {children}
         <div className="fixed bottom-1 w-full mt-20 p-2">
-        <BottomBar />
+        {/* <BottomBar /> */}
       </div>
       </AuthProvider>
       </body>

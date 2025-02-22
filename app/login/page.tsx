@@ -23,6 +23,7 @@ const LoginPage = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  // const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");

@@ -14,6 +14,7 @@ type Meal ={
 
 const AdminMeals = () => {
     const [meals, setMeals] = useState<Meal[]>([]);
+    
 
     useEffect(() => {
         const fetchMeals = async () => {
@@ -22,7 +23,7 @@ const AdminMeals = () => {
             const mealSnapshot = await getDocs(mealsCollection);
             const mealList: Meal[] = mealSnapshot.docs.map((doc) => ({
               id: doc.id,
-              ...(doc.data() as Omit<Meal, "id">), // Ensure correct type
+              ...(doc.data() as Omit<Meal, "id">), 
             }));
             setMeals(mealList);
           } catch (error) {
@@ -35,10 +36,10 @@ const AdminMeals = () => {
 
   return (
     <div className="p-5">
-        <Link href="/admin/meals/add">
-  <Button className="bg-orange-1 h-12 text-lg">Add Meal</Button>
-</Link>
-      <h1 className="text-2xl font-bold">Manage Meals</h1>
+      <h1 className="text-2xl font-bold text-center">Manage Meals</h1>
+      <Link href="/admin/meals/add">
+        <Button className="bg-orange-1 w-full text-lg rounded-none mt-3 md:w-1/3">Add Meal</Button>
+      </Link>
       <table className="w-full mt-4 border">
         <thead>
           <tr>
