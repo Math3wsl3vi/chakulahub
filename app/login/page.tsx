@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import type { User } from "firebase/auth";
 import { auth } from "@/configs/firebaseConfig";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 const LoginPage = () => {
   const [isLogin, setIsLogin] = useState(false);
@@ -23,7 +24,7 @@ const LoginPage = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  // const [showPassword, setShowPassword] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -87,9 +88,24 @@ const LoginPage = () => {
                 <Label htmlFor="email">Email</Label>
                 <Input id="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
               </div>
-              <div className="flex flex-col space-y-1.5">
+              <div className="flex flex-col space-y-1.5 relative">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                <div className="relative ">
+                  <Input
+                    id="password"
+                    placeholder="Password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-2 text-gray-500"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOffIcon size={20} /> : <EyeIcon size={20} />}
+                  </button>
+                </div>
               </div>
             </div>
             <button className="w-full bg-orange-1 text-white p-2 rounded mt-4" type="submit" disabled={loading}>
