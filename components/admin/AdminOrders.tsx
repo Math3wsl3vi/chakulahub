@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { db } from "@/configs/firebaseConfig";
-import { collection, getDocs, updateDoc, doc, Timestamp } from "firebase/firestore";
+import { collection, updateDoc, doc, Timestamp, onSnapshot } from "firebase/firestore";
 
 type Order = {
   id: string;
@@ -17,20 +17,17 @@ const AdminOrders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const ordersSnapshot = await getDocs(collection(db, "orders"));
-        const orderList: Order[] = ordersSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...(doc.data() as Omit<Order, "id">),
-        }));
-        setOrders(orderList);
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-      }
-    };
-
-    fetchOrders();
+    const ordersRef = collection(db, "orders");
+  
+    const unsubscribe = onSnapshot(ordersRef, (snapshot) => {
+      const updatedOrders: Order[] = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as Omit<Order, "id">),
+      }));
+      setOrders(updatedOrders);
+    });
+  
+    return () => unsubscribe(); 
   }, []);
 
   const markAsCompleted = async (orderId: string) => {

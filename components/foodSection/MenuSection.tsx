@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { db } from "@/configs/firebaseConfig";
-import { collection, addDoc, serverTimestamp, getDocs } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, getDocs, doc, getDoc, updateDoc } from "firebase/firestore";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/context/AuthContext";
 
@@ -46,13 +46,31 @@ const MenuSection = () => {
         return;
       }
   
+      const mealRef = doc(db, "meals", meal.id);
+      const mealSnapshot = await getDoc(mealRef);
+  
+      if (!mealSnapshot.exists()) {
+        alert("Meal not found.");
+        return;
+      }
+  
+      const currentQuantity = mealSnapshot.data().quantity;
+  
+      if (currentQuantity <= 0) {
+        alert("Sorry, this meal is out of stock.");
+        return;
+      }
+  
       await addDoc(collection(db, "orders"), {
-        userEmail: user.email || "Unknown User", // Store user's name
+        userEmail: user.email || "Unknown User",
         mealName: meal.name,
         price: meal.price,
         status: "pending",
         createdAt: serverTimestamp(),
       });
+  
+      // Decrease meal quantity
+      await updateDoc(mealRef, { quantity: currentQuantity - 1 });
   
       setSelectedMeal(meal);
       setIsCheckoutOpen(true);
@@ -63,7 +81,7 @@ const MenuSection = () => {
   };
 
   return (
-    <div>
+    <div className="">
       <h1 className="font-poppins text-center text-2xl text-orange-500">Browse The Daily Menu</h1>
 
       {/* Category Selection */}

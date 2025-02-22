@@ -1,6 +1,8 @@
 "use client"
 import MenuSection from "@/components/foodSection/MenuSection";
+// import Footer from "@/components/home/Footer";
 import Hero from "@/components/home/Hero";
+import Reviews from "@/components/home/Review";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function Home() {
@@ -18,6 +20,10 @@ export default function Home() {
         {/* lunch */}
         {/* dinner */}
         {/* bottom bar */}
+        {/* <Footer/> */}
+        <div className="mt-10 p-4">
+        <Reviews/>
+        </div>
       </div>
     </ProtectedRoute>
   );
