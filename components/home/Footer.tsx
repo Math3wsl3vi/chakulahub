@@ -29,9 +29,9 @@ const Footer = () => {
         </div>
         <div className='pb-5 mt-5'>
           <ul className='flex flex-row gap-5 justify-center items-center'>
-            <li className='border p-2 rounded-md flex justify-center items-center cursor-pointer'><Image src='/images/twitter.png' alt='twitter' width={17} height={17}/></li>
-            <li className='border p-2 rounded-md flex justify-center items-center cursor-pointer'><Image src='/images/facebook.png' alt='twitter' width={17} height={17}/></li>
-            <li className='border p-2 rounded-md flex justify-center items-center cursor-pointer'><Image src='/images/insta.png' alt='twitter' width={17} height={17}/></li>
+            <li className='border p-2 rounded-md flex justify-center items-center cursor-pointer'><Link href={'https://x.com/chakulaHubKenya'}><Image src='/images/twitter.png' alt='twitter' width={17} height={17}/></Link></li>
+            <li className='border p-2 rounded-md flex justify-center items-center cursor-pointer'><Link href={'https://web.facebook.com/profile.php?id=61573381958394'}><Image src='/images/facebook.png' alt='twitter' width={17} height={17}/></Link></li>
+            <li className='border p-2 rounded-md flex justify-center items-center cursor-pointer'><Link href={'https://www.instagram.com/chakulahubkenya/'}><Image src='/images/insta.png' alt='twitter' width={17} height={17}/></Link></li>
 
           </ul>
         </div>

@@ -7,7 +7,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 
 interface Order {
   id: string;
-  email: string;
+  userEmail: string;
   totalAmount: number;
   items: { name: string; quantity: number; price: number }[];
   timestamp?: { seconds: number; nanoseconds: number };
@@ -24,40 +24,40 @@ const OrdersPage = () => {
       setLoading(false);
       return;
     }
-
+  
     const fetchOrders = async () => {
       setLoading(true);
       setError(null);
-      
+  
       try {
         console.log("Fetching orders for:", user.email);
-
+  
         const ordersRef = collection(db, "orders");
         const q = query(
           ordersRef,
-          where("email", "==", user.email),
-          orderBy("timestamp", "desc")
+          where("userEmail", "==", user.email),
+          orderBy("createdAt", "desc") // ✅ Correct field name
         );
-
+  
         const snapshot = await getDocs(q);
-        
+  
         if (snapshot.empty) {
           console.log("No orders found.");
         } else {
           console.log("Orders retrieved:", snapshot.docs.length);
         }
-
+  
         const ordersData: Order[] = snapshot.docs.map((doc) => {
           const data = doc.data();
           return {
             id: doc.id,
-            email: data.email,
-            totalAmount: data.totalAmount,
-            items: data.items,
-            timestamp: data.timestamp || null,
+            userEmail: data.userEmail, // ✅ Corrected field name
+            totalAmount: data.totalAmount || 0, // ✅ Ensure it's present
+            items: data.items || [], // ✅ Ensure it's present
+            timestamp: data.createdAt || null, // ✅ Corrected timestamp field
           };
         });
-
+  
         setOrders(ordersData);
       } catch (err) {
         console.error("Error fetching orders:", err);
@@ -66,10 +66,10 @@ const OrdersPage = () => {
         setLoading(false);
       }
     };
-
+  
     fetchOrders();
   }, [user]);
-
+  
   return (
     <div className="p-5">
       <h1 className="text-2xl text-center text-orange-500">Your Orders</h1>
@@ -84,7 +84,7 @@ const OrdersPage = () => {
           {orders.map((order) => (
             <div key={order.id} className="border p-4 mb-4 rounded-lg shadow">
               <h3 className="font-bold">Order ID: {order.id}</h3>
-              <p className="text-gray-600">Email: {order.email}</p>
+              <p className="text-gray-600">Email: {order.userEmail}</p>
               <p className="font-bold text-orange-500">Total: Ksh {order.totalAmount}</p>
               <p className="text-gray-500">
                 Date: {order.timestamp ? new Date(order.timestamp.seconds * 1000).toLocaleString() : "N/A"}

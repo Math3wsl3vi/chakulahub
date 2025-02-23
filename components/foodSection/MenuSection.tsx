@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { db } from "@/configs/firebaseConfig";
-import { collection, getDocs } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, runTransaction, serverTimestamp } from "firebase/firestore";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/context/AuthContext";
 import Loader from "../Loader";
@@ -29,7 +29,7 @@ const MenuSection = () => {
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false); // Track payment success
   const { user } = useAuth();
   const { toast } = useToast();
-  const { addToCart } = useCartStore()
+  const { addToCart, cart } = useCartStore()
   const [polling, setPolling] = useState(false);  
 
   useEffect(() => {
@@ -67,24 +67,59 @@ const MenuSection = () => {
   };
 
   
-  const startPolling = (checkoutRequestID: string) => {
-    if (polling) return; 
-    setPolling(true); 
+  const startPolling = (checkoutRequestID: string, mealId: string) => {
+    if (polling) return;
+    setPolling(true);
   
     const interval = setInterval(async () => {
       try {
-        const response = await fetch("/api/mpesa/status", {  // ✅ Ensure this is a POST request
-          method: "POST", // Change from GET to POST ✅
+        const response = await fetch("/api/mpesa/status", {
+          method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ checkoutRequestID }), // ✅ Send checkoutRequestID
+          body: JSON.stringify({ checkoutRequestID }),
         });
   
         const data = await response.json();
+  
         if (data.status === "COMPLETED") {
           clearInterval(interval);
           setPolling(false);
-          setIsPaymentSuccessful(true); 
-          toast({ description: "Payment confirmed! You can now download your receipt." });
+          setIsPaymentSuccessful(true);
+  
+          try {
+            if (!selectedMeal) {
+              toast({ description: "No meal selected. Please try again." });
+              return;
+            }
+  
+            await addDoc(collection(db, "orders"), {
+              userEmail: user?.email || "Unknown User",
+              mealId: selectedMeal.id,
+              mealName: selectedMeal.name,
+              price: selectedMeal.price * quantity,
+              quantity,
+              phoneNumber,
+              status: "confirmed",
+              createdAt: serverTimestamp(),
+            });
+  
+            // ✅ Reduce meal quantity in Firestore using a transaction
+            const mealRef = doc(db, "meals", mealId);
+            await runTransaction(db, async (transaction) => {
+              const mealDoc = await transaction.get(mealRef);
+              if (!mealDoc.exists()) throw "Meal does not exist!";
+  
+              const newQuantity = mealDoc.data().quantity - quantity;
+              if (newQuantity < 0) throw "Not enough stock available!";
+  
+              transaction.update(mealRef, { quantity: newQuantity });
+            });
+  
+            toast({ description: "Payment confirmed! Order placed successfully." });
+          } catch (error) {
+            console.error("Error updating meal quantity:", error);
+            toast({ description: "Failed to update meal stock. Please contact support." });
+          }
         } else if (data.status === "FAILED") {
           clearInterval(interval);
           setPolling(false);
@@ -127,7 +162,7 @@ const MenuSection = () => {
       if (response.ok) {
         toast({ description: "Payment initiated. Waiting for confirmation..." });
         setPolling(true); // Start polling for confirmation
-        startPolling(data.CheckoutRequestID); // Call startPolling with request ID
+        startPolling(data.CheckoutRequestID, selectedMeal?.id ?? "");
       } else {
         toast({ description: "Failed to initiate payment." });
         console.error("Error:", data);
@@ -195,8 +230,17 @@ const MenuSection = () => {
         <div className="text-center mt-5 flex items-center justify-center"><Loader/> Loading meals...</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 px-10 mt-6 mb-20">
-          {meals.filter((meal) => meal.category === selectedCategory).map((meal) => (
-            <div key={meal.id} className="border p-4 rounded-lg shadow">
+          {meals.filter((meal) => meal.category === selectedCategory).map((meal) => {
+            const isInCart = cart.some((item) => item.id === meal.id);
+            return (
+            <div key={meal.id} className="border p-4 rounded-lg shadow relative">
+               {/* ✅ Small Badge on the Meal Item */}
+               {isInCart && (
+                  <span className="absolute top-2 right-2 bg-black text-white text-xs font-bold px-2 py-1 rounded-full">
+                    In Cart
+                  </span>
+                )}
+              
               <div className="flex justify-between items-center">
                 <div>
               <h3 className="mt-2 font-semibold capitalize">{meal.name}</h3>
@@ -215,7 +259,7 @@ const MenuSection = () => {
               </button>
               </div>
             </div>
-          ))}
+)})}
         </div>
       )}
 
