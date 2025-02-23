@@ -18,12 +18,12 @@ const Footer = () => {
             <Link href={'/'}>071234567890</Link>
             </div>
         </div>
-        <div>
+        <div className='justify-end flex flex-col'>
           <h1 className='text-xl font-semibold'>Links</h1>
           <ul>
             <li><Link href={'/faqs'} className='text-sm md:text-lg'>FAQS</Link></li>
-            <li><Link href={'/'} className='text-sm md:text-lg'>About us</Link></li>
-            <li><Link href={'/'} className='text-sm md:text-lg'>Terms and conditions</Link></li>
+            <li><Link href={'/aboutus'} className='text-sm md:text-lg'>About us</Link></li>
+            <li><Link href={'/terms'} className='text-sm md:text-lg'>Terms and conditions</Link></li>
           </ul>
         </div>
         </div>
