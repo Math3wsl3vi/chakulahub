@@ -135,9 +135,9 @@ const AdminMeals = () => {
                 className="text-center"
               />
             </div>
-            <DialogFooter>
-              <Button className="bg-gray-500" onClick={() => setSelectedMeal(null)}>Cancel</Button>
-              <Button className="bg-green-600 text-white" onClick={updateQuantity} disabled={loading}>
+            <DialogFooter className="flex gap-5">
+              <Button className="bg-black" onClick={() => setSelectedMeal(null)}>Cancel</Button>
+              <Button className="bg-orange-500 text-white" onClick={updateQuantity} disabled={loading}>
                 {loading ? "Saving..." : "Save"}
               </Button>
             </DialogFooter>
