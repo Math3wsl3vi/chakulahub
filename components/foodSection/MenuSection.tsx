@@ -70,25 +70,25 @@ const MenuSection = () => {
   const startPolling = (checkoutRequestID: string) => {
     if (polling) return; 
     setPolling(true); 
-
+  
     const interval = setInterval(async () => {
       try {
-        const response = await fetch("/api/mpesa/status", {
-          method: "POST",
+        const response = await fetch("/api/mpesa/status", {  // ✅ Ensure this is a POST request
+          method: "POST", // Change from GET to POST ✅
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ checkoutRequestID }),
+          body: JSON.stringify({ checkoutRequestID }), // ✅ Send checkoutRequestID
         });
   
         const data = await response.json();
         if (data.status === "COMPLETED") {
           clearInterval(interval);
           setPolling(false);
-          setIsPaymentSuccessful(true); // ✅ Add this line
+          setIsPaymentSuccessful(true); 
           toast({ description: "Payment confirmed! You can now download your receipt." });
         } else if (data.status === "FAILED") {
           clearInterval(interval);
           setPolling(false);
-          setIsPaymentSuccessful(false); // Reset in case of failure
+          setIsPaymentSuccessful(false);
           toast({ description: "Payment failed. Please try again." });
         }
       } catch (error) {
