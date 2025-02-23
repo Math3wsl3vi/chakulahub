@@ -4,6 +4,7 @@ import React, { useState} from "react";
 import { useCartStore } from "@/lib/store/cartStore";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
+import Image from "next/image";
 
 const CartPage = () => {
   const { cart, removeFromCart,updateQuantity } = useCartStore();
@@ -102,11 +103,16 @@ const CartPage = () => {
 
   return (
     <div className="p-5">
-      <h1 className="text-2xl font-bold">Your Cart</h1>
       {cart.length === 0 ? (
-        <p>Your cart is empty.</p>
+        <div>
+          <p className="text-2xl text-center">No items in your cart</p>
+         <div className="flex justify-center items-center">
+         <Image src={'/images/emptycart2.png'} alt="cart" width={500} height={500} className=""/>
+         </div>
+        </div>
       ) : (
         <div>
+      <h1 className="text-2xl font-bold">Your Cart</h1>
           {cart.map((item) => (
             <div key={item.id} className="border p-4 mb-2 flex justify-between">
               <div>
