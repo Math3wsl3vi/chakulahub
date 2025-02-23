@@ -1,9 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
-import { Button } from "@/components/ui/button";
+import { collection, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
+
 import Link from "next/link";
 import { db } from "@/configs/firebaseConfig";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 type Meal = {
   id: string;
@@ -16,6 +18,7 @@ type Meal = {
 const AdminMeals = () => {
   const [meals, setMeals] = useState<Meal[]>([]);
   const [loading, setLoading] = useState(false);
+  const [updating, setUpdating] = useState<string | null>(null); // To track updating meal
 
   useEffect(() => {
     fetchMeals();
@@ -35,11 +38,28 @@ const AdminMeals = () => {
     }
   };
 
+  const updateQuantity = async (id: string, newQuantity: number) => {
+    setUpdating(id);
+    try {
+      await updateDoc(doc(db, "meals", id), { quantity: newQuantity });
+      setMeals((prevMeals) =>
+        prevMeals.map((meal) =>
+          meal.id === id ? { ...meal, quantity: newQuantity } : meal
+        )
+      );
+      console.log("Quantity updated successfully");
+    } catch (error) {
+      console.error("Error updating quantity:", error);
+    } finally {
+      setUpdating(null);
+    }
+  };
+
   const deleteMeal = async (id: string) => {
     setLoading(true);
     try {
       await deleteDoc(doc(db, "meals", id));
-      setMeals((prevMeals) => prevMeals.filter((meal) => meal.id !== id)); // Remove from state
+      setMeals((prevMeals) => prevMeals.filter((meal) => meal.id !== id));
       console.log("Meal deleted successfully");
     } catch (error) {
       console.error("Error deleting meal:", error);
@@ -71,9 +91,17 @@ const AdminMeals = () => {
             <tr key={meal.id}>
               <td className="border px-4 py-2">{meal.name}</td>
               <td className="border px-4 py-2">{meal.category}</td>
-              <td className="border px-4 py-2">{meal.quantity}</td>
-              <td className="border px-4 py-2">Ksh {meal.price}</td>
               <td className="border px-4 py-2">
+                <Input
+                  type="number"
+                  value={meal.quantity}
+                  onChange={(e) => updateQuantity(meal.id, Number(e.target.value))}
+                  className="w-20 text-center"
+                  disabled={updating === meal.id}
+                />
+              </td>
+              <td className="border px-4 py-2">Ksh {meal.price}</td>
+              <td className="border px-4 py-2 flex gap-2">
                 <Button
                   className="bg-red-600 text-white px-4 py-1 rounded"
                   onClick={() => deleteMeal(meal.id)}

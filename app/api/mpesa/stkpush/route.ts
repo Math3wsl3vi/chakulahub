@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
         PartyB: shortcode,
         PhoneNumber: phone,
         CallBackURL: callbackUrl,
-        AccountReference: "Test123",
+        AccountReference: "ChakulaHub Test Account",
         TransactionDesc: "Payment test",
       },
       {
