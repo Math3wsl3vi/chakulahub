@@ -109,7 +109,7 @@ const LoginPage = () => {
     <div className="flex justify-center items-center w-full h-screen">
       <Card className="w-[350px]">
         <CardHeader className="flex items-center flex-col">
-          <CardTitle>Welcome to Chakula Hub</CardTitle>
+          <CardTitle>Welcome to ChakulaHub</CardTitle>
           <CardDescription>{isLogin ? "Login To Your Account" : "Create an Account"}</CardDescription>
           {error && <p className="text-red-500 text-sm">{error}</p>}
           {resetSuccess && <p className="text-green-500 text-sm">{resetSuccess}</p>}
