@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { db } from "@/configs/firebaseConfig";
-import { collection, addDoc, serverTimestamp, getDocs, doc, getDoc, updateDoc } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/context/AuthContext";
 import Loader from "../Loader";
@@ -13,7 +13,7 @@ type Meal = {
   name: string;
   category: "Breakfast" | "Lunch" | "Supper";
   price: number;
-  quantity:number;
+  quantity: number;
 };
 
 const MenuSection = () => {
@@ -22,8 +22,9 @@ const MenuSection = () => {
   const [selectedCategory, setSelectedCategory] = useState<"Breakfast" | "Lunch" | "Supper">("Breakfast");
   const [meals, setMeals] = useState<Meal[]>([]);
   const [loading, setLoading] = useState(true);
+  const [phoneNumber, setPhoneNumber] = useState(""); // State for phone number
   const { user } = useAuth();
-  const { toast } = useToast()
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchMeals = async () => {
@@ -35,7 +36,7 @@ const MenuSection = () => {
             ...(doc.data() as Omit<Meal, "id">),
           }))
           .filter((meal) => meal.quantity > 0); // Exclude meals with quantity 0
-  
+
         setMeals(mealList);
       } catch (error) {
         console.error("Error fetching meals:", error);
@@ -43,88 +44,90 @@ const MenuSection = () => {
         setLoading(false);
       }
     };
-  
+
     fetchMeals();
   }, []);
+
   const placeOrder = async (meal: Meal) => {
-    try {
-      if (!user) {
-        alert("User not found! Please log in.");
-        return;
-      }
-  
-      if (!meal.id) {
-        alert("Meal ID is missing!");
-        return;
-      }
-  
-      const mealRef = doc(db, "meals", meal.id);
-      const mealSnapshot = await getDoc(mealRef);
-  
-      if (!mealSnapshot.exists()) {
-        alert("Meal not found.");
-        return;
-      }
-  
-      const currentQuantity = mealSnapshot.data()?.quantity ?? 0;
-  
-      if (currentQuantity <= 0) {
-        alert("Sorry, this meal is out of stock.");
-        return;
-      }
-  
-      // Add the order
-      await addDoc(collection(db, "orders"), {
-        userEmail: user.email || "Unknown User",
-        mealName: meal.name,
-        price: meal.price,
-        status: "pending",
-        createdAt: serverTimestamp(),
-      });
-  
-      // Decrease meal quantity
-      await updateDoc(mealRef, { quantity: currentQuantity - 1 });
-  
-      setSelectedMeal(meal);
-      setIsCheckoutOpen(true);
-    } catch (error) {
-      console.error("Error placing order:", error);
-      alert("Failed to place order.");
+    if (!user) {
+      alert("User not found! Please log in.");
+      return;
     }
+
+    if (!meal.id) {
+      alert("Meal ID is missing!");
+      return;
+    }
+
+    const mealRef = doc(db, "meals", meal.id);
+    const mealSnapshot = await getDoc(mealRef);
+
+    if (!mealSnapshot.exists()) {
+      alert("Meal not found.");
+      return;
+    }
+
+    const currentQuantity = mealSnapshot.data()?.quantity ?? 0;
+
+    if (currentQuantity <= 0) {
+      alert("Sorry, this meal is out of stock.");
+      return;
+    }
+
+    // Open checkout and allow phone number input
+    setSelectedMeal(meal);
+    setIsCheckoutOpen(true);
   };
-  
 
   const handlePayment = async () => {
+    if (!phoneNumber) {
+      toast({ description: "Please enter your phone number." });
+      return;
+    }
+  
+    // Remove spaces and ensure it's a string
+    let formattedPhone = phoneNumber.trim();
+  
+    if (formattedPhone.startsWith("07")) {
+      formattedPhone = "254" + formattedPhone.slice(1); // Convert 07XXXXXXXX to 2547XXXXXXXX
+    } else if (formattedPhone.startsWith("01")) {
+      formattedPhone = "254" + formattedPhone.slice(1); // Convert 01XXXXXXXX to 2541XXXXXXXX
+    }
+  
+    // Validate that the number is now in the correct format (2547XXXXXXXX or 2541XXXXXXXX)
+    if (!/^254(7|1)\d{8}$/.test(formattedPhone)) {
+      toast({ description: "Invalid phone number. Use format 07XXXXXXXX or 01XXXXXXXX." });
+      return;
+    }
+  
     try {
       const response = await fetch("/api/mpesa/stkpush", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          phone: "254717271815", // Replace with the actual phone number
-          amount: 1, // Replace with the actual amount
+          phone: formattedPhone, // Send the formatted phone number
+          amount: selectedMeal?.price ?? 1,
         }),
       });
   
       const data = await response.json();
-      
+  
       if (response.ok) {
-        toast({description:"Payment request sent. Please check your phone."});
+        toast({ description: "Payment request sent. Please check your phone." });
         console.log("STK Push Response:", data);
       } else {
-        toast({description:"Failed to initiate payment."});
+        toast({ description: "Failed to initiate payment." });
         console.error("Error:", data);
       }
     } catch (error) {
       console.error("Payment error:", error);
-      toast({description:"Something went wrong. Please try again."});
+      toast({ description: "Something went wrong. Please try again." });
     }
   };
   
-  
-  
 
   return (
-    <div className="">
+    <div>
       <h1 className="font-poppins text-center text-2xl text-orange-500">Browse The Daily Menu</h1>
 
       {/* Category Selection */}
@@ -155,10 +158,7 @@ const MenuSection = () => {
                 <p className="mt-2 font-bold text-orange-500">Ksh {meal.price}</p>
                 <button
                   className="mt-2 w-full bg-black text-white p-2 rounded"
-                  onClick={() => {
-                    handlePayment()
-                    placeOrder(meal)
-                  }}
+                  onClick={() => placeOrder(meal)}
                 >
                   Order Meal
                 </button>
@@ -176,9 +176,20 @@ const MenuSection = () => {
             <div className="mt-4">
               <p><strong>Meal:</strong> {selectedMeal.name}</p>
               <p><strong>Price:</strong> Ksh {selectedMeal.price}</p>
+              
+              {/* Phone Number Input */}
+              <input
+                type="text"
+                placeholder="Enter phone number"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                className="border p-2 w-full mt-2"
+              />
+
+              {/* Pay Button */}
               <button 
                 className="mt-4 w-full bg-orange-500 text-white p-2 rounded" 
-                onClick={() => setIsCheckoutOpen(false)}
+                onClick={handlePayment}
               >
                 Confirm & Pay
               </button>
