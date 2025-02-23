@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
 
 const TermsAndConditions = () => {
   return (
@@ -29,7 +28,7 @@ const TermsAndConditions = () => {
       <p className="mb-4">ChakulaHub reserves the right to modify these terms at any time. Continued use of the platform signifies your acceptance of any changes.</p>
       
       <h2 className="text-xl font-semibold mt-4">7. Contact Us</h2>
-      <p className="mb-4">If you have any questions about these Terms and Conditions, please <Link href="/contact" className="text-orange-500 underline">contact us</Link>.</p>
+      <p className="mb-4">If you have any questions about these Terms and Conditions, please <a href="tel:+254798 050462" className="text-orange-500 underline">contact us</a>.</p>
     </div>
   );
 };

@@ -14,7 +14,7 @@ const Footer = () => {
           <h1 className="font-bold text-xl text-orange-500">CHAKULAHUB</h1>
           <p className="text-sm">Contact us</p>
           <p className="text-sm">Email: <Link href="mailto:chakulahub@gmail.com" className="text-blue-500">chakulahub@gmail.com</Link></p>
-          <p className="text-sm">Call: <Link href="tel:071234567890" className="text-blue-500">071234567890</Link></p>
+          <p className="text-sm">Call: <a href="tel:+254798 050462" className="text-orange-500 font-semibold">0798 050462</a></p>
         </div>
 
         {/* Navigation Links */}
