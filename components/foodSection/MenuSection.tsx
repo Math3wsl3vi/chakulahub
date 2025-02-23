@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { db } from "@/configs/firebaseConfig";
-import { collection, getDocs, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/context/AuthContext";
 import Loader from "../Loader";
@@ -22,7 +22,8 @@ const MenuSection = () => {
   const [selectedCategory, setSelectedCategory] = useState<"Breakfast" | "Lunch" | "Supper">("Breakfast");
   const [meals, setMeals] = useState<Meal[]>([]);
   const [loading, setLoading] = useState(true);
-  const [phoneNumber, setPhoneNumber] = useState(""); // State for phone number
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [quantity, setQuantity] = useState(1);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -35,7 +36,7 @@ const MenuSection = () => {
             id: doc.id,
             ...(doc.data() as Omit<Meal, "id">),
           }))
-          .filter((meal) => meal.quantity > 0); // Exclude meals with quantity 0
+          .filter((meal) => meal.quantity > 0);
 
         setMeals(mealList);
       } catch (error) {
@@ -54,28 +55,8 @@ const MenuSection = () => {
       return;
     }
 
-    if (!meal.id) {
-      alert("Meal ID is missing!");
-      return;
-    }
-
-    const mealRef = doc(db, "meals", meal.id);
-    const mealSnapshot = await getDoc(mealRef);
-
-    if (!mealSnapshot.exists()) {
-      alert("Meal not found.");
-      return;
-    }
-
-    const currentQuantity = mealSnapshot.data()?.quantity ?? 0;
-
-    if (currentQuantity <= 0) {
-      alert("Sorry, this meal is out of stock.");
-      return;
-    }
-
-    // Open checkout and allow phone number input
     setSelectedMeal(meal);
+    setQuantity(1); 
     setIsCheckoutOpen(true);
   };
 
@@ -84,37 +65,30 @@ const MenuSection = () => {
       toast({ description: "Please enter your phone number." });
       return;
     }
-  
-    // Remove spaces and ensure it's a string
+
     let formattedPhone = phoneNumber.trim();
-  
-    if (formattedPhone.startsWith("07")) {
-      formattedPhone = "254" + formattedPhone.slice(1); // Convert 07XXXXXXXX to 2547XXXXXXXX
-    } else if (formattedPhone.startsWith("01")) {
-      formattedPhone = "254" + formattedPhone.slice(1); // Convert 01XXXXXXXX to 2541XXXXXXXX
+    if (formattedPhone.startsWith("07") || formattedPhone.startsWith("01")) {
+      formattedPhone = "254" + formattedPhone.slice(1);
     }
-  
-    // Validate that the number is now in the correct format (2547XXXXXXXX or 2541XXXXXXXX)
+
     if (!/^254(7|1)\d{8}$/.test(formattedPhone)) {
       toast({ description: "Invalid phone number. Use format 07XXXXXXXX or 01XXXXXXXX." });
       return;
     }
-  
+
     try {
       const response = await fetch("/api/mpesa/stkpush", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          phone: formattedPhone, // Send the formatted phone number
-          amount: selectedMeal?.price ?? 1,
+          phone: formattedPhone,
+          amount: (selectedMeal?.price ?? 1) * quantity,
         }),
       });
-  
+
       const data = await response.json();
-  
       if (response.ok) {
         toast({ description: "Payment request sent. Please check your phone." });
-        console.log("STK Push Response:", data);
       } else {
         toast({ description: "Failed to initiate payment." });
         console.error("Error:", data);
@@ -124,13 +98,10 @@ const MenuSection = () => {
       toast({ description: "Something went wrong. Please try again." });
     }
   };
-  
 
   return (
     <div>
       <h1 className="font-poppins text-center text-2xl text-orange-500">Browse The Daily Menu</h1>
-
-      {/* Category Selection */}
       <div className="grid grid-cols-3 px-10 mt-10">
         {["Breakfast", "Lunch", "Supper"].map((category) => (
           <div
@@ -145,29 +116,22 @@ const MenuSection = () => {
         ))}
       </div>
 
-      {/* Meals Display */}
       {loading ? (
         <div className="text-center mt-5 flex items-center justify-center"><Loader/> Loading meals...</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 px-10 mt-6 mb-20">
-          {meals
-            .filter((meal) => meal.category === selectedCategory)
-            .map((meal) => (
-              <div key={meal.id} className="border p-4 rounded-lg shadow">
-                <h3 className="mt-2 font-semibold">{meal.name}</h3>
-                <p className="mt-2 font-bold text-orange-500">Ksh {meal.price}</p>
-                <button
-                  className="mt-2 w-full bg-black text-white p-2 rounded"
-                  onClick={() => placeOrder(meal)}
-                >
-                  Order Meal
-                </button>
-              </div>
-            ))}
+          {meals.filter((meal) => meal.category === selectedCategory).map((meal) => (
+            <div key={meal.id} className="border p-4 rounded-lg shadow">
+              <h3 className="mt-2 font-semibold">{meal.name}</h3>
+              <p className="mt-2 font-bold text-orange-500">Ksh {meal.price}</p>
+              <button className="mt-2 w-full bg-black text-white p-2 rounded" onClick={() => placeOrder(meal)}>
+                Order Meal
+              </button>
+            </div>
+          ))}
         </div>
       )}
 
-      {/* Checkout Dialog */}
       <Dialog open={isCheckoutOpen} onOpenChange={setIsCheckoutOpen}>
         <DialogTrigger asChild></DialogTrigger>
         <DialogContent className="p-5">
@@ -175,24 +139,16 @@ const MenuSection = () => {
           {selectedMeal && (
             <div className="mt-4">
               <p><strong>Meal:</strong> {selectedMeal.name}</p>
-              <p><strong>Price:</strong> Ksh {selectedMeal.price}</p>
-              
-              {/* Phone Number Input */}
-              <input
-                type="text"
-                placeholder="Enter phone number"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                className="border p-2 w-full mt-2"
-              />
-
-              {/* Pay Button */}
-              <button 
-                className="mt-4 w-full bg-orange-500 text-white p-2 rounded" 
-                onClick={handlePayment}
-              >
-                Confirm & Pay
-              </button>
+              <p><strong>Price per Meal:</strong> Ksh {selectedMeal.price}</p>
+              <div className="mt-3 flex items-center gap-3">
+                <label className="font-bold">Quantity:</label>
+                <button className="bg-gray-300 px-3 py-1 rounded" onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}>-</button>
+                <span>{quantity}</span>
+                <button className="bg-gray-300 px-3 py-1 rounded" onClick={() => setQuantity((prev) => prev + 1)}>+</button>
+              </div>
+              <p className="mt-2 font-bold text-orange-500">Total Price: Ksh {selectedMeal.price * quantity}</p>
+              <input type="text" placeholder="Enter phone number" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} className="border p-2 w-full mt-2" />
+              <button className="mt-4 w-full bg-orange-500 text-white p-2 rounded" onClick={handlePayment}>Confirm & Pay</button>
             </div>
           )}
         </DialogContent>
