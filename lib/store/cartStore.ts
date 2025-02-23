@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 type Meal = {
   id: string;
@@ -13,40 +14,49 @@ type CartState = {
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
-  getTotalPrice: () => number; // Add this function
+  getTotalPrice: () => number;
 };
 
-export const useCartStore = create<CartState>((set, get) => ({
-  cart: [],
+export const useCartStore = create<CartState>()(
+  persist(
+    (set, get) => ({
+      cart: [],
 
-  addToCart: (meal) =>
-    set((state) => {
-      const existingMeal = state.cart.find((item) => item.id === meal.id);
-      if (existingMeal) {
-        return {
+      addToCart: (meal) =>
+        set((state) => {
+          const existingMeal = state.cart.find((item) => item.id === meal.id);
+          if (existingMeal) {
+            return {
+              cart: state.cart.map((item) =>
+                item.id === meal.id ? { ...item, quantity: item.quantity + 1 } : item
+              ),
+            };
+          }
+          return { cart: [...state.cart, { ...meal, quantity: 1 }] };
+        }),
+
+      removeFromCart: (id) =>
+        set((state) => ({
+          cart: state.cart.filter((meal) => meal.id !== id),
+        })),
+
+      updateQuantity: (id, quantity) =>
+        set((state) => ({
           cart: state.cart.map((item) =>
-            item.id === meal.id ? { ...item, quantity: item.quantity + 1 } : item
+            item.id === id ? { ...item, quantity: Math.max(1, quantity) } : item
           ),
-        };
-      }
-      return { cart: [...state.cart, { ...meal, quantity: 1 }] };
+        })),
+
+      clearCart: () => set({ cart: [] }),
+
+      getTotalPrice: () => {
+        return get().cart.reduce((total, item) => total + item.price * item.quantity, 0);
+      },
     }),
-
-  removeFromCart: (id) =>
-    set((state) => ({
-      cart: state.cart.filter((meal) => meal.id !== id),
-    })),
-
-  updateQuantity: (id, quantity) =>
-    set((state) => ({
-      cart: state.cart.map((item) =>
-        item.id === id ? { ...item, quantity: Math.max(1, quantity) } : item
-      ),
-    })),
-
-  clearCart: () => set({ cart: [] }),
-
-  getTotalPrice: () => {
-    return get().cart.reduce((total, item) => total + item.price * item.quantity, 0);
-  },
-}));
+    {
+      name: "cart-storage", // Unique key for localStorage
+      storage: createJSONStorage(() => localStorage)
+, // ✅ Fix: Use `storage` instead of `getStorage`
+    }
+  )
+);
