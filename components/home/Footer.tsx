@@ -1,42 +1,56 @@
-import Image from 'next/image'
-import Link from 'next/link'
-import React from 'react'
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import React from "react";
 
 const Footer = () => {
   return (
-    <div className='w-full min-h-32 border-t shadow-sm rounded-t-md px-4 md:flex md:flex-col md:items-center md:justify-center'>
-      <div className='flex flex-row justify-between items-center md:gap-20 mt-5'>
+    <footer className="w-full border-t shadow-sm rounded-t-md bg-white p-6">
+      <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 text-gray-800">
+        
+        {/* Brand Section */}
         <div>
-          <h1 className='font-semibold text-xl'>CHAKULAHUB</h1>
-          <p className='text-sm'>Contact us</p>
-          <div className='text-sm md:text-lg flex gap-2'>
-            <p>Email us:</p>
-            <Link href={'/'}>chakulahub@gmail.com</Link>
-            </div>
-            <div className='text-smmd:text-lg  flex gap-2'>
-            <p>Call us:</p>
-            <Link href={'/'}>071234567890</Link>
-            </div>
+          <h1 className="font-bold text-xl text-orange-500">CHAKULAHUB</h1>
+          <p className="text-sm">Contact us</p>
+          <p className="text-sm">Email: <Link href="mailto:chakulahub@gmail.com" className="text-blue-500">chakulahub@gmail.com</Link></p>
+          <p className="text-sm">Call: <Link href="tel:071234567890" className="text-blue-500">071234567890</Link></p>
         </div>
-        <div className='justify-end flex flex-col'>
-          <h1 className='text-xl font-semibold'>Links</h1>
-          <ul>
-            <li><Link href={'/faqs'} className='text-sm md:text-lg'>FAQS</Link></li>
-            <li><Link href={'/aboutus'} className='text-sm md:text-lg'>About us</Link></li>
-            <li><Link href={'/terms'} className='text-sm md:text-lg'>Terms and conditions</Link></li>
+
+        {/* Navigation Links */}
+        <div>
+          <h1 className="text-xl font-semibold">Links</h1>
+          <ul className="mt-2 space-y-1">
+            <li><Link href="/faqs" className="text-sm hover:text-orange-500">FAQs</Link></li>
+            <li><Link href="/aboutus" className="text-sm hover:text-orange-500">About Us</Link></li>
+            <li><Link href="/terms" className="text-sm hover:text-orange-500">Terms & Conditions</Link></li>
           </ul>
         </div>
-        </div>
-        <div className='pb-5 mt-5'>
-          <ul className='flex flex-row gap-5 justify-center items-center'>
-            <li className='border p-2 rounded-md flex justify-center items-center cursor-pointer'><Link href={'https://x.com/chakulaHubKenya'}><Image src='/images/twitter.png' alt='twitter' width={17} height={17}/></Link></li>
-            <li className='border p-2 rounded-md flex justify-center items-center cursor-pointer'><Link href={'https://web.facebook.com/profile.php?id=61573381958394'}><Image src='/images/facebook.png' alt='twitter' width={17} height={17}/></Link></li>
-            <li className='border p-2 rounded-md flex justify-center items-center cursor-pointer'><Link href={'https://www.instagram.com/chakulahubkenya/'}><Image src='/images/insta.png' alt='twitter' width={17} height={17}/></Link></li>
 
-          </ul>
+        {/* Social Media Icons */}
+        <div>
+          <h1 className="text-xl font-semibold">Follow Us</h1>
+          <div className="flex gap-4 mt-3">
+            <Link href="https://x.com/chakulaHubKenya" target="_blank" className="hover:opacity-75">
+              <Image src="/images/twitter.png" alt="Twitter" width={20} height={20} />
+            </Link>
+            <Link href="https://web.facebook.com/profile.php?id=61573381958394" target="_blank" className="hover:opacity-75">
+              <Image src="/images/facebook.png" alt="Facebook" width={20} height={20} />
+            </Link>
+            <Link href="https://www.instagram.com/chakulahubkenya/" target="_blank" className="hover:opacity-75">
+              <Image src="/images/insta.png" alt="Instagram" width={20} height={20} />
+            </Link>
+          </div>
         </div>
-    </div>
-  )
-}
 
-export default Footer
+      </div>
+
+      {/* Copyright */}
+      <div className="text-center text-sm text-gray-600 mt-6 border-t pt-4">
+        &copy; {new Date().getFullYear()} ChakulaHub. All rights reserved.
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;
