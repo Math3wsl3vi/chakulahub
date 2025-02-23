@@ -105,22 +105,39 @@ const MenuSection = () => {
 
   const downloadReceipt = () => {
     if (!selectedMeal) return;
-
+  
     const doc = new jsPDF();
     const date = new Date().toLocaleString();
-
-    doc.setFontSize(16);
-    doc.text("Meal Receipt", 20, 20);
+  
+    // Title
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("Meal Receipt", 105, 20, { align: "center" });
+  
+    // Line separator
+    doc.setLineWidth(0.5);
+    doc.line(20, 25, 190, 25);
+  
+    // Date & Order Details
     doc.setFontSize(12);
-    doc.text(`Date: ${date}`, 20, 30);
-    doc.text(`Meal: ${selectedMeal.name}`, 20, 40);
-    doc.text(`Quantity: ${quantity}`, 20, 50);
-    doc.text(`Price per meal: Ksh ${selectedMeal.price}`, 20, 60);
-    doc.text(`Total Price: Ksh ${selectedMeal.price * quantity}`, 20, 70);
-    doc.text(`Phone Number: ${phoneNumber}`, 20, 80);
-
+    doc.setFont("helvetica", "normal");
+    doc.text(`Date: ${date}`, 20, 35);
+    
+    doc.text(`Meal: ${selectedMeal.name}`, 20, 45);
+    doc.text(`Quantity: ${quantity}`, 20, 55);
+    doc.text(`Price per meal: Ksh ${selectedMeal.price}`, 20, 65);
+    doc.text(`Total Price: Ksh ${selectedMeal.price * quantity}`, 20, 75);
+    doc.text(`Phone Number: ${phoneNumber}`, 20, 85);
+  
+    // Footer
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(10);
+    doc.text("Thank you for your order!", 105, 110, { align: "center" });
+  
+    // Save PDF
     doc.save(`Receipt_${selectedMeal.name}_${Date.now()}.pdf`);
   };
+  
 
   return (
     <div>
