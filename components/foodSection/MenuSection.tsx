@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import Loader from "../Loader";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
+import { useCartStore } from "@/lib/store/cartStore";
 
 type Meal = {
   id: string;
@@ -28,6 +29,8 @@ const MenuSection = () => {
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false); // Track payment success
   const { user } = useAuth();
   const { toast } = useToast();
+  const { addToCart } = useCartStore()
+  const [polling, setPolling] = useState(false);  
 
   useEffect(() => {
     const fetchMeals = async () => {
@@ -63,22 +66,53 @@ const MenuSection = () => {
     setIsPaymentSuccessful(false); // Reset payment status
   };
 
+  
+  const startPolling = (checkoutRequestID: string) => {
+    if (polling) return; 
+    setPolling(true); 
+
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch("/api/mpesa/status", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ checkoutRequestID }),
+        });
+  
+        const data = await response.json();
+        if (data.status === "COMPLETED") {
+          clearInterval(interval);
+          setPolling(false);
+          setIsPaymentSuccessful(true); // ✅ Add this line
+          toast({ description: "Payment confirmed! You can now download your receipt." });
+        } else if (data.status === "FAILED") {
+          clearInterval(interval);
+          setPolling(false);
+          setIsPaymentSuccessful(false); // Reset in case of failure
+          toast({ description: "Payment failed. Please try again." });
+        }
+      } catch (error) {
+        console.error("Polling error:", error);
+      }
+    }, 5000);
+  };
+  
   const handlePayment = async () => {
     if (!phoneNumber) {
       toast({ description: "Please enter your phone number." });
       return;
     }
-
+  
     let formattedPhone = phoneNumber.trim();
     if (formattedPhone.startsWith("07") || formattedPhone.startsWith("01")) {
       formattedPhone = "254" + formattedPhone.slice(1);
     }
-
+  
     if (!/^254(7|1)\d{8}$/.test(formattedPhone)) {
       toast({ description: "Invalid phone number. Use format 07XXXXXXXX or 01XXXXXXXX." });
       return;
     }
-
+  
     try {
       const response = await fetch("/api/mpesa/stkpush", {
         method: "POST",
@@ -88,11 +122,12 @@ const MenuSection = () => {
           amount: (selectedMeal?.price ?? 1) * quantity,
         }),
       });
-
+  
       const data = await response.json();
       if (response.ok) {
-        toast({ description: "Payment successful! You can now download your receipt." });
-        setIsPaymentSuccessful(true); // Mark payment as successful
+        toast({ description: "Payment initiated. Waiting for confirmation..." });
+        setPolling(true); // Start polling for confirmation
+        startPolling(data.CheckoutRequestID); // Call startPolling with request ID
       } else {
         toast({ description: "Failed to initiate payment." });
         console.error("Error:", data);
@@ -102,7 +137,7 @@ const MenuSection = () => {
       toast({ description: "Something went wrong. Please try again." });
     }
   };
-
+ 
   const downloadReceipt = () => {
     if (!selectedMeal) return;
   
@@ -137,8 +172,8 @@ const MenuSection = () => {
     // Save PDF
     doc.save(`Receipt_${selectedMeal.name}_${Date.now()}.pdf`);
   };
-  
-
+ 
+ 
   return (
     <div>
       <h1 className="font-poppins text-center text-2xl text-orange-500">Browse The Daily Menu</h1>
@@ -162,11 +197,23 @@ const MenuSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 px-10 mt-6 mb-20">
           {meals.filter((meal) => meal.category === selectedCategory).map((meal) => (
             <div key={meal.id} className="border p-4 rounded-lg shadow">
-              <h3 className="mt-2 font-semibold">{meal.name}</h3>
+              <div className="flex justify-between items-center">
+                <div>
+              <h3 className="mt-2 font-semibold capitalize">{meal.name}</h3>
               <p className="mt-2 font-bold text-orange-500">Ksh {meal.price}</p>
+                </div>
+                <div>
+                <h3 className="mt-2 font-semibold">{meal.quantity} Left</h3>
+                </div>
+              </div>
+              <div className="flex gap-5">
               <button className="mt-2 w-full bg-black text-white p-2 rounded" onClick={() => placeOrder(meal)}>
                 Order Meal
               </button>
+              <button className="mt-2 w-full bg-orange-1 text-white p-2 rounded" onClick={()=>addToCart(meal)}>
+                Add To Cart
+              </button>
+              </div>
             </div>
           ))}
         </div>
