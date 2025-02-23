@@ -7,6 +7,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "@/components/
 import { useAuth } from "@/context/AuthContext";
 import Loader from "../Loader";
 import { useToast } from "@/hooks/use-toast";
+import jsPDF from "jspdf";
 
 type Meal = {
   id: string;
@@ -24,6 +25,7 @@ const MenuSection = () => {
   const [loading, setLoading] = useState(true);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [quantity, setQuantity] = useState(1);
+  const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false); // Track payment success
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -49,15 +51,16 @@ const MenuSection = () => {
     fetchMeals();
   }, []);
 
-  const placeOrder = async (meal: Meal) => {
+  const placeOrder = (meal: Meal) => {
     if (!user) {
       alert("User not found! Please log in.");
       return;
     }
 
     setSelectedMeal(meal);
-    setQuantity(1); 
+    setQuantity(1);
     setIsCheckoutOpen(true);
+    setIsPaymentSuccessful(false); // Reset payment status
   };
 
   const handlePayment = async () => {
@@ -88,7 +91,8 @@ const MenuSection = () => {
 
       const data = await response.json();
       if (response.ok) {
-        toast({ description: "Payment request sent. Please check your phone." });
+        toast({ description: "Payment successful! You can now download your receipt." });
+        setIsPaymentSuccessful(true); // Mark payment as successful
       } else {
         toast({ description: "Failed to initiate payment." });
         console.error("Error:", data);
@@ -97,6 +101,25 @@ const MenuSection = () => {
       console.error("Payment error:", error);
       toast({ description: "Something went wrong. Please try again." });
     }
+  };
+
+  const downloadReceipt = () => {
+    if (!selectedMeal) return;
+
+    const doc = new jsPDF();
+    const date = new Date().toLocaleString();
+
+    doc.setFontSize(16);
+    doc.text("Meal Receipt", 20, 20);
+    doc.setFontSize(12);
+    doc.text(`Date: ${date}`, 20, 30);
+    doc.text(`Meal: ${selectedMeal.name}`, 20, 40);
+    doc.text(`Quantity: ${quantity}`, 20, 50);
+    doc.text(`Price per meal: Ksh ${selectedMeal.price}`, 20, 60);
+    doc.text(`Total Price: Ksh ${selectedMeal.price * quantity}`, 20, 70);
+    doc.text(`Phone Number: ${phoneNumber}`, 20, 80);
+
+    doc.save(`Receipt_${selectedMeal.name}_${Date.now()}.pdf`);
   };
 
   return (
@@ -135,20 +158,36 @@ const MenuSection = () => {
       <Dialog open={isCheckoutOpen} onOpenChange={setIsCheckoutOpen}>
         <DialogTrigger asChild></DialogTrigger>
         <DialogContent className="p-5">
-          <DialogTitle>Checkout</DialogTitle>
+          <DialogTitle>{isPaymentSuccessful ? "Payment Successful" : "Checkout"}</DialogTitle>
           {selectedMeal && (
             <div className="mt-4">
-              <p><strong>Meal:</strong> {selectedMeal.name}</p>
-              <p><strong>Price per Meal:</strong> Ksh {selectedMeal.price}</p>
-              <div className="mt-3 flex items-center gap-3">
-                <label className="font-bold">Quantity:</label>
-                <button className="bg-gray-300 px-3 py-1 rounded" onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}>-</button>
-                <span>{quantity}</span>
-                <button className="bg-gray-300 px-3 py-1 rounded" onClick={() => setQuantity((prev) => prev + 1)}>+</button>
-              </div>
-              <p className="mt-2 font-bold text-orange-500">Total Price: Ksh {selectedMeal.price * quantity}</p>
-              <input type="text" placeholder="Enter phone number" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} className="border p-2 w-full mt-2" />
-              <button className="mt-4 w-full bg-orange-500 text-white p-2 rounded" onClick={handlePayment}>Confirm & Pay</button>
+              {isPaymentSuccessful ? (
+                // Payment Successful View
+                <>
+                  <p><strong>Meal:</strong> {selectedMeal.name}</p>
+                  <p><strong>Quantity:</strong> {quantity}</p>
+                  <p><strong>Total Price:</strong> Ksh {selectedMeal.price * quantity}</p>
+                  <p><strong>Phone Number:</strong> {phoneNumber}</p>
+                  <button className="mt-4 w-full bg-orange-500 text-white p-2 rounded" onClick={downloadReceipt}>
+                    Download Receipt
+                  </button>
+                </>
+              ) : (
+                // Checkout View
+                <>
+                  <p><strong>Meal:</strong> {selectedMeal.name}</p>
+                  <p><strong>Price per Meal:</strong> Ksh {selectedMeal.price}</p>
+                  <div className="mt-3 flex items-center gap-3">
+                    <label className="font-bold">Quantity:</label>
+                    <button className="bg-gray-300 px-3 py-1 rounded" onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}>-</button>
+                    <span>{quantity}</span>
+                    <button className="bg-gray-300 px-3 py-1 rounded" onClick={() => setQuantity((prev) => prev + 1)}>+</button>
+                  </div>
+                  <p className="mt-2 font-bold text-orange-500">Total Price: Ksh {selectedMeal.price * quantity}</p>
+                  <input type="text" placeholder="Enter phone number" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} className="border p-2 w-full mt-2" />
+                  <button className="mt-4 w-full bg-orange-500 text-white p-2 rounded" onClick={handlePayment}>Confirm & Pay</button>
+                </>
+              )}
             </div>
           )}
         </DialogContent>
