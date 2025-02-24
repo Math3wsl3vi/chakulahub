@@ -9,6 +9,7 @@ import Loader from "../Loader";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
 import { useCartStore } from "@/lib/store/cartStore";
+import JsBarcode from "jsbarcode";
 
 type Meal = {
   id: string;
@@ -175,40 +176,70 @@ const MenuSection = () => {
  
   const downloadReceipt = () => {
     if (!selectedMeal) return;
-  
+
     const doc = new jsPDF();
     const date = new Date().toLocaleString();
-  
+    const orderID = `ORD-${Date.now()}`; // Unique Order ID
+
+    // Generate barcode as Base64 image
+    const canvas = document.createElement("canvas");
+    JsBarcode(canvas, orderID, { format: "CODE128" });
+
     // Title
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(18);
-    doc.text("Meal Receipt", 105, 20, { align: "center" });
-  
+    doc.setFontSize(22);
+    doc.text("ChakulaHub Receipt", 105, 20, { align: "center" });
+
     // Line separator
     doc.setLineWidth(0.5);
     doc.line(20, 25, 190, 25);
-  
-    // Date & Order Details
+
+    // Section: Order Details (Encased in a box)
     doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.rect(18, 30, 174, 40); // Draw box
+
+    doc.text(`Date:`, 22, 40);
     doc.setFont("helvetica", "normal");
-    doc.text(`Date: ${date}`, 20, 35);
+    doc.text(`${date}`, 50, 40);
+
+    doc.setFont("helvetica", "bold");
+    doc.text(`Order ID:`, 22, 50);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${orderID}`, 50, 50);
+
+    doc.setFont("helvetica", "bold");
+    doc.text(`Phone Number:`, 22, 60);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${phoneNumber}`, 60, 60);
+
+    // Section: Meal Details
+    doc.setFont("helvetica", "bold");
+    doc.text("Meal Details:", 22, 80);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Meal: ${selectedMeal.name}`, 22, 90);
+    doc.text(`Quantity: ${quantity}`, 22, 100);
+    doc.text(`Price per meal: Ksh ${selectedMeal.price}`, 22, 110);
     
-    doc.text(`Meal: ${selectedMeal.name}`, 20, 45);
-    doc.text(`Quantity: ${quantity}`, 20, 55);
-    doc.text(`Price per meal: Ksh ${selectedMeal.price}`, 20, 65);
-    doc.text(`Total Price: Ksh ${selectedMeal.price * quantity}`, 20, 75);
-    doc.text(`Phone Number: ${phoneNumber}`, 20, 85);
-  
+    // Highlight Total Price
+    doc.setFont("helvetica", "bold");
+    doc.text(`Total Price: Ksh ${selectedMeal.price * quantity}`, 22, 120);
+    doc.setLineWidth(0.3);
+    doc.line(20, 125, 190, 125);
+
+    // Centered Barcode
+    const barcodeData = canvas.toDataURL("image/png");
+    doc.addImage(barcodeData, "PNG", 55, 130, 100, 30); // Adjust position & size
+
     // Footer
     doc.setFont("helvetica", "italic");
-    doc.setFontSize(10);
-    doc.text("Thank you for your order!", 105, 110, { align: "center" });
-  
+    doc.setFontSize(12);
+    doc.text("Thank you for choosing ChakulaHub!", 105, 170, { align: "center" });
+
     // Save PDF
     doc.save(`Receipt_${selectedMeal.name}_${Date.now()}.pdf`);
-  };
- 
- 
+};
+
   return (
     <div>
       <h1 className="font-poppins text-center text-2xl text-orange-500">Browse The Daily Menu</h1>
