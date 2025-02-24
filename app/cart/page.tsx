@@ -216,7 +216,7 @@ const { user } = useAuth()
         <div>
           <p className="text-2xl text-center">No items in your cart</p>
          <div className="flex justify-center items-center">
-         <Image src={'/images/emptycart2.png'} alt="cart" width={500} height={500} className=""/>
+         <Image src={'/images/emptyCart.png'} alt="cart" width={500} height={500} className=""/>
          </div>
         </div>
       ) : (
@@ -248,7 +248,7 @@ const { user } = useAuth()
           ))}
           <p className="font-bold">Total: Ksh {totalAmount}</p>
           <input type="text" placeholder="Enter phone number" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} className="border p-2 w-full mt-2" />
-          <button onClick={handlePayment} className="bg-orange-500 text-white p-2 w-full mt-4" disabled={polling}>
+          <button onClick={handlePayment} className="bg-orange-1 text-white p-2 w-full mt-4" disabled={polling}>
             {polling ? "Processing..." : "Confirm & Pay"}
           </button>
           {isPaymentSuccessful && (

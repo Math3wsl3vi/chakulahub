@@ -87,7 +87,7 @@ const OrdersPage = () => {
 
   return (
     <div className="p-5">
-      <h1 className="text-2xl text-center text-orange-500">Your Orders</h1>
+      <h1 className="text-2xl text-center text-orange-1">Your Orders</h1>
       {loading ? (
         <p className="text-center mt-5">Loading orders...</p>
       ) : error ? (
@@ -100,7 +100,7 @@ const OrdersPage = () => {
             <div key={order.id} className="border p-4 mb-4 rounded-lg shadow">
               <h3 className="font-bold">Order ID: {order.id}</h3>
               <p className="text-gray-600">Email: {order.userEmail}</p>
-              <p className="font-bold text-orange-500">
+              <p className="font-bold text-orange-1">
                 Total: Ksh {order.totalAmount}
               </p>
               <p className="text-gray-500">

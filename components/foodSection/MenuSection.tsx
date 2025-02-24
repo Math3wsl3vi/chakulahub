@@ -332,8 +332,8 @@ const MenuSection = () => {
                     <Image
                       src={meal.imageUrl}
                       alt={meal.name}
-                      width={100}
-                      height={100}
+                      width={50}
+                      height={50}
                       className="w-40 h-30 object-cover rounded-lg"
                     />
                   )}
