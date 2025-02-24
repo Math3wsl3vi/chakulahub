@@ -76,33 +76,34 @@ const Reviews = () => {
     fetchMeals();
   }, []);
 
+
   useEffect(() => {
-    if (meals.length === 0) return; 
-
+    if (meals.length === 0) return; // Ensure meals are loaded before fetching reviews
+  
     const fetchReviews = async () => {
-      try {
-        const reviewsSnapshot = await getDocs(collection(db, "reviews"));
-        const reviewList: Review[] = await Promise.all(
-          reviewsSnapshot.docs.map(async (reviewDoc) => {
-            const reviewData = reviewDoc.data() as Omit<Review, "id">;
-            const userSnap = reviewData.userId 
-              ? await getDoc(firestoreDoc(db, "users", reviewData.userId)) 
-              : null;
-            const userEmail = userSnap?.exists() ? userSnap.data().email : "Unknown User";
-            const meal = meals.find((m) => m.id === reviewData.mealId);
-            return { id: reviewDoc.id, ...reviewData, userEmail, mealName: meal?.name || "Unknown Meal" };
-          })
-        );
-
-        setReviews(reviewList);
-      } catch (error) {
-        console.error("Error fetching reviews:", error);
-      }
+      const reviewsSnapshot = await getDocs(collection(db, "reviews"));
+      const reviewList: Review[] = await Promise.all(
+        reviewsSnapshot.docs.map(async (reviewDoc) => {
+          const reviewData = reviewDoc.data() as Review;
+          const mealName = meals.find((meal) => meal.id === reviewData.mealId)?.name || "Unknown Meal"; // Use meals state
+  
+          return {
+            ...reviewData,
+            id: reviewDoc.id,
+            mealName, // Attach meal name
+          };
+        })
+      );
+  
+      setReviews(reviewList); // Ensure type consistency
     };
-
+  
     fetchReviews();
-  }, [meals]);
-
+  }, [meals]); // Depend on meals so it's loaded first
+  
+  
+  
+  
   const submitReview = async () => {
     if (!user || !selectedMeal || !reviewText) {
       toast({ description: "Please fill in all fields." });
