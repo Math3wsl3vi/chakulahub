@@ -7,18 +7,17 @@ const About = () => {
     <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-3xl font-bold text-orange-500 mb-4">About ChakulaHub</h1>
       <p className="text-gray-700 mb-4">
-        ChakulaHub is your ultimate online food ordering platform, connecting you with your favorite restaurants and meals in just a few clicks. Our mission is to provide a seamless, fast, and reliable way to satisfy your cravings without any hassle.
+        ChakulaHub is your ultimate online meal booking platform, connecting you with your favorite meals in just a few clicks. Our mission is to provide a seamless, fast, and reliable way to satisfy your cravings without any hustle.
       </p>
 
       <h2 className="text-xl font-semibold mt-4">Our Mission</h2>
       <p className="text-gray-700">
-        We aim to revolutionize food delivery by ensuring convenience, affordability, and high-quality service for every meal you order. We partner with top restaurants and vendors to bring you a wide variety of options to choose from.
+        We aim to revolutionize meal booking by ensuring convenience, affordability, and high-quality service for every meal you order. We bring you a wide variety of options to choose from.
       </p>
 
       <h2 className="text-xl font-semibold mt-4">Why Choose ChakulaHub?</h2>
       <ul className="list-disc list-inside text-gray-700">
-        <li>🛵 Fast and reliable food delivery service</li>
-        <li>🍽️ A diverse selection of restaurants and meals</li>
+        <li>🍽️ A diverse selection of meals</li>
         <li>💳 Secure and hassle-free payment options</li>
         <li>📱 Easy-to-use platform for smooth ordering</li>
         <li>🎯 Excellent customer support to assist you anytime</li>
@@ -35,7 +34,7 @@ const About = () => {
       </p>
       <p className="text-gray-700">
         📧 <strong>Email:</strong> support@chakulahub.com <br />
-        📞 <strong>Phone:</strong> +254 700 000 000 <br />
+        📞 <strong>Phone:</strong> <a href="tel:+254798 050462">0798 050462 </a><br />
         📍 <strong>Location:</strong> Nairobi, Kenya
       </p>
     </div>

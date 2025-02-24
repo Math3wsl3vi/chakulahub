@@ -236,10 +236,10 @@ const MenuSection = () => {
             <div key={meal.id} className="border p-4 rounded-lg shadow relative">
                {/* ✅ Small Badge on the Meal Item */}
                {isInCart && (
-                  <span className="absolute top-2 right-2 bg-black text-white text-xs font-bold px-2 py-1 rounded-full">
-                    In Cart
-                  </span>
-                )}
+  <span className="absolute top-2 right-2 bg-black text-white text-xs font-bold px-2 py-1 rounded-full">
+    {cart.find((item) => item.id === meal.id)?.quantity} {cart.find((item) => item.id === meal.id)?.quantity === 1 ? "item" : "items"} in Cart
+  </span>
+)}
               
               <div className="flex justify-between items-center">
                 <div>

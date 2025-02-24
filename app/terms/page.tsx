@@ -17,10 +17,7 @@ const TermsAndConditions = () => {
       
       <h2 className="text-xl font-semibold mt-4">3. Ordering and Payments</h2>
       <p className="mb-4">Orders are subject to availability. Payments must be made using the provided payment options. Once an order is placed, cancellations may not be possible.</p>
-      
-      <h2 className="text-xl font-semibold mt-4">4. Refund Policy</h2>
-      <p className="mb-4">Refunds are processed on a case-by-case basis. If an order is undelivered or incorrect, please contact our support team within 24 hours.</p>
-      
+          
       <h2 className="text-xl font-semibold mt-4">5. Prohibited Activities</h2>
       <p className="mb-4">Users are prohibited from misusing the platform, engaging in fraudulent transactions, or violating any applicable laws.</p>
       

@@ -15,11 +15,6 @@ const FAQs = () => {
         "Once an order is confirmed, cancellations may not be possible. However, if an issue arises, contact support immediately.",
     },
     {
-      question: "How long does delivery take?",
-      answer:
-        "Delivery times vary based on location, but most orders are delivered within 30-45 minutes.",
-    },
-    {
       question: "What if my payment fails?",
       answer:
         "If your payment fails, check your M-Pesa balance or payment details and try again. If the issue persists, contact support.",
