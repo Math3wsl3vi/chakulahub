@@ -34,7 +34,7 @@ const About = () => {
       </p>
       <p className="text-gray-700">
         📧 <strong>Email:</strong> support@chakulahub.com <br />
-        📞 <strong>Phone:</strong> <a href="tel:+254798 050462">0798 050462 </a><br />
+        📞 <strong>Phone:</strong> <a href="tel:+254798 050462" className="text-orange-1">0798 050462 </a><br />
         📍 <strong>Location:</strong> Nairobi, Kenya
       </p>
     </div>
