@@ -9,6 +9,7 @@ import Image from "next/image";
 import { db } from "@/configs/firebaseConfig";
 import { useAuth } from "@/context/AuthContext";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import JsBarcode from "jsbarcode";
 
 const CartPage = () => {
   const { cart, removeFromCart,updateQuantity, clearCart } = useCartStore();
@@ -141,24 +142,73 @@ const { user } = useAuth()
   };
 
   const downloadReceipt = () => {
+    if (cart.length === 0) return;
+
     const doc = new jsPDF();
+    const date = new Date().toLocaleString();
+    const orderID = `ORD-${Date.now()}`; // Unique Order ID
+
+    // Generate barcode as Base64 image
+    const canvas = document.createElement("canvas");
+    JsBarcode(canvas, orderID, { format: "CODE128" });
+
+    // Title
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(18);
-    doc.text("Cart Receipt", 105, 20, { align: "center" });
+    doc.setFontSize(22);
+    doc.text("ChakulaHub Receipt", 105, 20, { align: "center" });
+
+    // Line separator
+    doc.setLineWidth(0.5);
     doc.line(20, 25, 190, 25);
 
+    // Section: Order Details (Encased in a box)
     doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.rect(18, 30, 174, 40); // Draw box
+
+    doc.text(`Date:`, 22, 40);
     doc.setFont("helvetica", "normal");
-    doc.text(`Date: ${new Date().toLocaleString()}`, 20, 35);
+    doc.text(`${date}`, 50, 40);
 
+    doc.setFont("helvetica", "bold");
+    doc.text(`Order ID:`, 22, 50);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${orderID}`, 50, 50);
+
+    doc.setFont("helvetica", "bold");
+    doc.text(`Phone Number:`, 22, 60);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${phoneNumber}`, 60, 60);
+
+    // Section: Meal Details
+    doc.setFont("helvetica", "bold");
+    doc.text("Meal Details:", 22, 80);
+    doc.setFont("helvetica", "normal");
+    
     cart.forEach((item, index) => {
-      doc.text(`${index + 1}. ${item.name} x${item.quantity} - Ksh ${item.price * item.quantity}`, 20, 45 + index * 10);
+        const yOffset = 90 + index * 10;
+        doc.text(`${index + 1}. ${item.name} x${item.quantity} - Ksh ${item.price * item.quantity}`, 22, yOffset);
     });
+    
+    // Highlight Total Price
+    doc.setFont("helvetica", "bold");
+    doc.text(`Total Price: Ksh ${totalAmount}`, 22, 90 + cart.length * 10);
+    doc.setLineWidth(0.3);
+    doc.line(20, 95 + cart.length * 10, 190, 95 + cart.length * 10);
 
-    doc.text(`Total: Ksh ${totalAmount}`, 20, 45 + cart.length * 10);
-    doc.text("Thank you for your purchase!", 105, 80, { align: "center" });
-    doc.save(`Receipt_${Date.now()}.pdf`);
-  };
+    // Centered Barcode
+    const barcodeData = canvas.toDataURL("image/png");
+    doc.addImage(barcodeData, "PNG", 55, 100 + cart.length * 10, 100, 30); // Adjust position & size
+
+    // Footer
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(12);
+    doc.text("Thank you for choosing ChakulaHub!", 105, 140 + cart.length * 10, { align: "center" });
+
+    // Save PDF
+    doc.save(`Receipt_${orderID}.pdf`);
+};
+
 
   return (
     <div className="p-5">
