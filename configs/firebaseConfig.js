@@ -2,6 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, browserLocalPersistence, setPersistence } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage"; // Import Firebase Storage
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -16,8 +17,9 @@ const firebaseConfig = {
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-export const db = getFirestore(app)
+export const db = getFirestore(app);
+export const storage = getStorage(app); // Initialize Storage
 
-setPersistence(auth, browserLocalPersistence) // Ensures user stays logged in
+setPersistence(auth, browserLocalPersistence)
     .then(() => console.log("Auth persistence set"))
     .catch((error) => console.error("Auth persistence error:", error));

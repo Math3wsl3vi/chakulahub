@@ -1,11 +1,25 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
-import { collection, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import Link from "next/link";
 import { db } from "@/configs/firebaseConfig";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import Image from "next/image";
 
 type Meal = {
   id: string;
@@ -13,6 +27,7 @@ type Meal = {
   category: string;
   price: number;
   quantity: number;
+  imageUrl: string;
 };
 
 const AdminMeals = () => {
@@ -43,10 +58,14 @@ const AdminMeals = () => {
     if (!selectedMeal) return;
     setLoading(true);
     try {
-      await updateDoc(doc(db, "meals", selectedMeal.id), { quantity: newQuantity });
+      await updateDoc(doc(db, "meals", selectedMeal.id), {
+        quantity: newQuantity,
+      });
       setMeals((prevMeals) =>
         prevMeals.map((meal) =>
-          meal.id === selectedMeal.id ? { ...meal, quantity: newQuantity } : meal
+          meal.id === selectedMeal.id
+            ? { ...meal, quantity: newQuantity }
+            : meal
         )
       );
       console.log("Quantity updated successfully");
@@ -82,6 +101,7 @@ const AdminMeals = () => {
       <table className="w-full mt-4 border min-w-max">
         <thead>
           <tr>
+            <th className="border px-4 py-2">Image</th>
             <th className="border px-4 py-2">Meal</th>
             <th className="border px-4 py-2">Category</th>
             <th className="border px-4 py-2">Quantity</th>
@@ -92,13 +112,27 @@ const AdminMeals = () => {
         <tbody>
           {meals.map((meal) => (
             <tr key={meal.id}>
+              <td className="border px-4 py-2">
+                {meal.imageUrl ? (
+                  <Image
+                    src={meal.imageUrl}
+                    alt={meal.name}
+                    width={64}
+                    height={64}
+                    className="w-16 h-16 object-cover"
+                  />
+                ) : (
+                  <span>No Image</span>
+                )}
+              </td>
+
               <td className="border px-4 py-2">{meal.name}</td>
               <td className="border px-4 py-2">{meal.category}</td>
               <td className="border px-4 py-2">{meal.quantity}</td>
               <td className="border px-4 py-2">Ksh {meal.price}</td>
               <td className="border px-4 py-2 flex gap-2">
                 <Button
-                  className="bg-orange-500 text-white px-4 py-1 rounded"
+                  className="bg-orange-1 text-white px-4 py-1 rounded"
                   onClick={() => {
                     setSelectedMeal(meal);
                     setNewQuantity(meal.quantity);
@@ -136,8 +170,17 @@ const AdminMeals = () => {
               />
             </div>
             <DialogFooter className="flex gap-5">
-              <Button className="bg-black" onClick={() => setSelectedMeal(null)}>Cancel</Button>
-              <Button className="bg-orange-500 text-white" onClick={updateQuantity} disabled={loading}>
+              <Button
+                className="bg-black"
+                onClick={() => setSelectedMeal(null)}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="bg-orange-500 text-white"
+                onClick={updateQuantity}
+                disabled={loading}
+              >
                 {loading ? "Saving..." : "Save"}
               </Button>
             </DialogFooter>

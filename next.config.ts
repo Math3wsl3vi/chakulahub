@@ -11,7 +11,17 @@ const pwaConfig = withPWA({
 });
 
 const nextConfig: NextConfig = {
-  ...pwaConfig, // ✅ Spread instead of direct assignment
-};
+  ...pwaConfig, 
+  reactStrictMode: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "firebasestorage.googleapis.com",
+      },
+    ],
+  },
+};// ✅ Spread instead of direct assignment
+
 
 export default nextConfig;
