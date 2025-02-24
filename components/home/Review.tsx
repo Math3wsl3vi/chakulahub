@@ -218,7 +218,7 @@ const Reviews = () => {
             </div>
           ))}
 
-          <Button className="bg-orange-500 text-white px-4 py-2 rounded mt-2 w-full" 
+          <Button className="bg-orange-1 text-white px-4 py-2 rounded mt-2 w-full" 
             onClick={() => setShowAll(!showAll)}>
             {showAll ? "Show Less" : "View More"}
           </Button>

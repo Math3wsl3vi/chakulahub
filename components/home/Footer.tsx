@@ -11,19 +11,19 @@ const Footer = () => {
         
         {/* Brand Section */}
         <div>
-          <h1 className="font-bold text-xl text-orange-500">CHAKULAHUB</h1>
+          <h1 className="font-bold text-xl text-orange-1">CHAKULAHUB</h1>
           <p className="text-sm">Contact us</p>
           <p className="text-sm">Email: <Link href="mailto:chakulahub@gmail.com" className="text-blue-500">chakulahub@gmail.com</Link></p>
-          <p className="text-sm">Call: <a href="tel:+254798 050462" className="text-orange-500 font-semibold">0798 050462</a></p>
+          <p className="text-sm">Call: <a href="tel:+254798 050462" className="text-orange-1 font-semibold">0798 050462</a></p>
         </div>
 
         {/* Navigation Links */}
         <div>
           <h1 className="text-xl font-semibold">Links</h1>
           <ul className="mt-2 space-y-1">
-            <li><Link href="/faqs" className="text-sm hover:text-orange-500">FAQs</Link></li>
-            <li><Link href="/aboutus" className="text-sm hover:text-orange-500">About Us</Link></li>
-            <li><Link href="/terms" className="text-sm hover:text-orange-500">Terms & Conditions</Link></li>
+            <li><Link href="/faqs" className="text-sm hover:text-orange-1">FAQs</Link></li>
+            <li><Link href="/aboutus" className="text-sm hover:text-orange-1">About Us</Link></li>
+            <li><Link href="/terms" className="text-sm hover:text-orange-1">Terms & Conditions</Link></li>
           </ul>
         </div>
 

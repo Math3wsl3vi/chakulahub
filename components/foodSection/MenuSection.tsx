@@ -242,13 +242,13 @@ const MenuSection = () => {
 
   return (
     <div>
-      <h1 className="font-poppins text-center text-2xl text-orange-500">Browse The Daily Menu</h1>
+      <h1 className="font-poppins text-center text-2xl text-orange-1">Browse The Daily Menu</h1>
       <div className="grid grid-cols-3 px-10 mt-10">
         {["Breakfast", "Lunch", "Supper"].map((category) => (
           <div
             key={category}
             className={`border p-2 text-center cursor-pointer ${
-              selectedCategory === category ? "bg-orange-500 text-white" : ""
+              selectedCategory === category ? "bg-orange-1 text-white" : ""
             }`}
             onClick={() => setSelectedCategory(category as "Breakfast" | "Lunch" | "Supper")}
           >
@@ -275,14 +275,14 @@ const MenuSection = () => {
               <div className="flex justify-between items-center">
                 <div>
               <h3 className="mt-2 font-semibold capitalize">{meal.name}</h3>
-              <p className="mt-2 font-bold text-orange-500">Ksh {meal.price}</p>
+              <p className="mt-2 font-bold text-orange-1">Ksh {meal.price}</p>
                 </div>
                 <div>
                 <h3 className="mt-2 font-semibold">{meal.quantity} Left</h3>
                 </div>
               </div>
               <div className="flex gap-5">
-              <button className="mt-2 w-full bg-black text-white p-2 rounded" onClick={() => placeOrder(meal)} >
+              <button className="mt-2 w-full bg-orange-2 text-white p-2 rounded" onClick={() => placeOrder(meal)} >
               Order Now
               </button>
               <button className="mt-2 w-full bg-orange-1 text-white p-2 rounded" onClick={()=>addToCart(meal)}>
@@ -307,7 +307,7 @@ const MenuSection = () => {
                   <p><strong>Quantity:</strong> {quantity}</p>
                   <p><strong>Total Price:</strong> Ksh {selectedMeal.price * quantity}</p>
                   <p><strong>Phone Number:</strong> {phoneNumber}</p>
-                  <button className="mt-4 w-full bg-orange-500 text-white p-2 rounded" onClick={downloadReceipt}>
+                  <button className="mt-4 w-full bg-orange-1 text-white p-2 rounded" onClick={downloadReceipt}>
                     Download Receipt
                   </button>
                 </>
@@ -322,9 +322,9 @@ const MenuSection = () => {
                     <span>{quantity}</span>
                     <button className="bg-gray-300 px-3 py-1 rounded" onClick={() => setQuantity((prev) => prev + 1)}>+</button>
                   </div>
-                  <p className="mt-2 font-bold text-orange-500">Total Price: Ksh {selectedMeal.price * quantity}</p>
+                  <p className="mt-2 font-bold text-orange-1">Total Price: Ksh {selectedMeal.price * quantity}</p>
                   <input type="text" placeholder="Enter phone number" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} className="border p-2 w-full mt-2" />
-                  <button className="mt-4 w-full bg-orange-500 text-white p-2 rounded" onClick={handlePayment} disabled={polling}>
+                  <button className="mt-4 w-full bg-orange-1 text-white p-2 rounded" onClick={handlePayment} disabled={polling}>
             {polling ? "Processing..." : "Confirm & Pay"}
                     
                   </button>

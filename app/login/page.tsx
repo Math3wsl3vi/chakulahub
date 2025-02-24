@@ -147,7 +147,7 @@ const LoginPage = () => {
                 </div>
               </div>
             </div>
-            <button className="w-full bg-orange-500 text-white p-2 rounded mt-4" type="submit" disabled={loading}>
+            <button className="w-full bg-orange-1 text-white p-2 rounded mt-4" type="submit" disabled={loading}>
               {loading ? "Processing..." : isLogin ? "Login" : "Sign Up"}
             </button>
           </form>

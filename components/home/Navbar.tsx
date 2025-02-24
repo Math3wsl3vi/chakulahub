@@ -69,7 +69,7 @@ const Navbar = () => {
           <Link href={'/cart'} className="relative">
               <Image src="/images/cart.png" alt="cart" width={25} height={25} />
               {cartItemCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                <span className="absolute -top-2 -right-2 bg-orange-1 text-white text-xs font-bold px-2 py-1 rounded-full">
                   {cartItemCount}
                 </span>
               )}
@@ -114,7 +114,7 @@ const Navbar = () => {
               Admin Dashboard
             </Link>
           )}
-          <button className="mt-4 w-full text-center bg-orange-500 text-white py-2 rounded" onClick={handleLogout}>
+          <button className="mt-4 w-full text-center bg-orange-1 text-white py-2 rounded" onClick={handleLogout}>
             Logout
           </button>
         </div>
