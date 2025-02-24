@@ -64,10 +64,12 @@ const AdminOrders = () => {
   };
 
   // Pagination logic
-  const totalPages = Math.ceil(orders.length / ordersPerPage);
-  const indexOfLastOrder = currentPage * ordersPerPage;
-  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
-  const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
+  const visibleOrders = orders.slice(3); // Skip the first three orders
+const totalPages = Math.ceil(visibleOrders.length / ordersPerPage);
+
+const indexOfLastOrder = currentPage * ordersPerPage;
+const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+const currentOrders = visibleOrders.slice(indexOfFirstOrder, indexOfLastOrder);
 
   return (
     <div className="p-6 overflow-x-auto">
