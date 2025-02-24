@@ -21,24 +21,32 @@ type Order = {
 
 const AdminOrders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ordersPerPage = 15; // Set the number of orders per page
 
   useEffect(() => {
     const ordersRef = collection(db, "orders");
 
     const unsubscribe = onSnapshot(ordersRef, (snapshot) => {
-      const updatedOrders: Order[] = snapshot.docs.map((doc) => {
-        const data = doc.data() as Omit<Order, "id">;
-        return {
-          id: doc.id,
-          ...data,
-          createdAt: data.createdAt || Timestamp.now(), // Ensure it exists
-        };
-      });
+      const updatedOrders: Order[] = snapshot.docs
+        .map((doc) => {
+          const data = doc.data() as Omit<Order, "id">;
+          return {
+            id: doc.id,
+            ...data,
+            createdAt: data.createdAt || Timestamp.now(), // Ensure it exists
+          };
+        })
+        .sort(
+          (a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0)
+        ); // Sort by createdAt DESC
+
       setOrders(updatedOrders);
     });
 
     return () => unsubscribe();
   }, []);
+
   const markAsCompleted = async (orderId: string) => {
     try {
       const orderRef = doc(db, "orders", orderId);
@@ -55,6 +63,12 @@ const AdminOrders = () => {
     }
   };
 
+  // Pagination logic
+  const totalPages = Math.ceil(orders.length / ordersPerPage);
+  const indexOfLastOrder = currentPage * ordersPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+  const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
+
   return (
     <div className="p-6 overflow-x-auto">
       <h1 className="text-2xl font-bold mb-4">Orders Dashboard</h1>
@@ -64,13 +78,13 @@ const AdminOrders = () => {
             <th className="border p-2">Meal</th>
             <th className="border p-2">User Name</th>
             <th className="border p-2">Price</th>
-            <th className="border p-2">Booked Time</th> {/* New Column */}
+            <th className="border p-2">Booked Time</th>
             <th className="border p-2">Status</th>
             <th className="border p-2">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {orders.map((order) => (
+          {currentOrders.map((order) => (
             <tr key={order.id} className="border">
               <td className="border p-2">{order.mealName}</td>
               <td className="border p-2">{order.userEmail}</td>
@@ -95,6 +109,25 @@ const AdminOrders = () => {
           ))}
         </tbody>
       </table>
+
+      {/* Pagination controls */}
+      <div className="flex justify-center mt-4">
+        <button
+          className="mx-1 px-4 py-2 bg-gray-200 rounded"
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+        <span className="px-4 py-2">{currentPage} of {totalPages}</span>
+        <button
+          className="mx-1 px-4 py-2 bg-gray-200 rounded"
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };

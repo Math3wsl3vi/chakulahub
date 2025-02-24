@@ -5,6 +5,10 @@ import { useCartStore } from "@/lib/store/cartStore";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
 import Image from "next/image";
+// import { addDoc, collection, doc, getDocs, query, runTransaction, serverTimestamp, where } from "firebase/firestore";
+import { db } from "@/configs/firebaseConfig";
+import { useAuth } from "@/context/AuthContext";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 const CartPage = () => {
   const { cart, removeFromCart,updateQuantity, clearCart } = useCartStore();
@@ -12,14 +16,25 @@ const CartPage = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [polling, setPolling] = useState(false);
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false);
-
+const { user } = useAuth()
   const totalAmount = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   const startPolling = (checkoutRequestID: string) => {
-    if (polling) return; 
+    if (polling) return;
     setPolling(true);
   
+    let retries = 0;
+    const maxRetries = 10;
+    let orderSaved = false; // ✅ Prevent duplicate saves
+  
     const interval = setInterval(async () => {
+      if (retries >= maxRetries) {
+        clearInterval(interval);
+        setPolling(false);
+        toast({ description: "Payment verification timed out. Try again." });
+        return;
+      }
+  
       try {
         const response = await fetch("/api/mpesa/status", {
           method: "POST",
@@ -28,15 +43,17 @@ const CartPage = () => {
         });
   
         const data = await response.json();
+  
         if (data.status === "COMPLETED") {
           clearInterval(interval);
           setPolling(false);
           setIsPaymentSuccessful(true);
-          toast({ description: "Payment confirmed! You can now download your receipt." });
-          setTimeout(() => {
-            setIsPaymentSuccessful(false); // Hide the receipt button
-            clearCart();
-          }, 20000);
+  
+          // ✅ Ensure order is saved only once after payment confirmation
+          if (!orderSaved) {
+            orderSaved = true;
+            await saveOrderToFirestore();
+          }
         } else if (data.status === "FAILED") {
           clearInterval(interval);
           setPolling(false);
@@ -46,10 +63,48 @@ const CartPage = () => {
       } catch (error) {
         console.error("Polling error:", error);
       }
+  
+      retries++;
     }, 5000);
   };
   
-
+  // 🔹 Function to save order after payment confirmation
+  const saveOrderToFirestore = async () => {
+    if (cart.length === 0) {
+      toast({ description: "Cart is empty. Please try again." });
+      return;
+    }
+  
+    try {
+      await Promise.all(
+        cart.map(async (item) => {
+          const orderRef = await addDoc(collection(db, "orders"), {
+            userEmail: user?.email || "Unknown User",
+            mealId: item.id,
+            mealName: item.name,
+            price: item.price * item.quantity,
+            quantity: item.quantity,
+            phoneNumber,
+            status: "pending",
+            createdAt: serverTimestamp(),
+          });
+  
+          console.log(`✅ Order ${orderRef.id} placed for ${item.name}`);
+        })
+      );
+  
+      toast({ description: "Payment confirmed! Orders placed successfully." });
+  
+      setTimeout(() => {
+        setIsPaymentSuccessful(false);
+        clearCart();
+      }, 20000);
+    } catch (error) {
+      console.error("❌ Error saving order:", error);
+      toast({ description: "Failed to save order. Please contact support." });
+    }
+  };
+  
   const handlePayment = async () => {
     if (!phoneNumber) {
       toast({ description: "Please enter your phone number." });
