@@ -251,8 +251,8 @@ const MenuSection = () => {
                 </div>
               </div>
               <div className="flex gap-5">
-              <button className="mt-2 w-full bg-black text-white p-2 rounded" onClick={() => placeOrder(meal)}>
-                Order Meal
+              <button className="mt-2 w-full bg-black text-white p-2 rounded" onClick={() => placeOrder(meal)} disabled={polling}>
+              {polling ? "Processing..." : "Confirm & Pay"}
               </button>
               <button className="mt-2 w-full bg-orange-1 text-white p-2 rounded" onClick={()=>addToCart(meal)}>
                 Add To Cart

@@ -7,7 +7,7 @@ import jsPDF from "jspdf";
 import Image from "next/image";
 
 const CartPage = () => {
-  const { cart, removeFromCart,updateQuantity } = useCartStore();
+  const { cart, removeFromCart,updateQuantity, clearCart } = useCartStore();
   const { toast } = useToast();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [polling, setPolling] = useState(false);
@@ -33,6 +33,10 @@ const CartPage = () => {
           setPolling(false);
           setIsPaymentSuccessful(true);
           toast({ description: "Payment confirmed! You can now download your receipt." });
+          setTimeout(() => {
+            setIsPaymentSuccessful(false); // Hide the receipt button
+            clearCart();
+          }, 20000);
         } else if (data.status === "FAILED") {
           clearInterval(interval);
           setPolling(false);
