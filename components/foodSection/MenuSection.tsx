@@ -314,16 +314,7 @@ const MenuSection = () => {
                     </span>
                   )}
 
-                  {meal.imageUrl && (
-                    <Image
-                      src={meal.imageUrl}
-                      alt={meal.name}
-                      width={100}
-                      height={100}
-                      className="w-full h-40 object-cover rounded-lg"
-                    />
-                  )}
-
+                 
                   <div className="flex justify-between items-center">
                     <div>
                       <h3 className="mt-2 font-semibold capitalize">
@@ -332,11 +323,23 @@ const MenuSection = () => {
                       <p className="mt-2 font-bold text-orange-1">
                         Ksh {meal.price}
                       </p>
-                    </div>
-                    <div>
                       <h3 className="mt-2 font-semibold">
                         {meal.quantity} Left
                       </h3>
+                    </div>
+                    <div>
+                    {meal.imageUrl && (
+                    <Image
+                      src={meal.imageUrl}
+                      alt={meal.name}
+                      width={100}
+                      height={100}
+                      className="w-40 h-30 object-cover rounded-lg"
+                    />
+                  )}
+
+                      
+
                     </div>
                   </div>
                   <div className="flex gap-5">
