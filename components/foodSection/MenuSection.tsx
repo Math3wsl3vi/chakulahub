@@ -282,8 +282,8 @@ const MenuSection = () => {
                 </div>
               </div>
               <div className="flex gap-5">
-              <button className="mt-2 w-full bg-black text-white p-2 rounded" onClick={() => placeOrder(meal)} disabled={polling}>
-              {polling ? "Processing..." : "Confirm & Pay"}
+              <button className="mt-2 w-full bg-black text-white p-2 rounded" onClick={() => placeOrder(meal)} >
+              Order Now
               </button>
               <button className="mt-2 w-full bg-orange-1 text-white p-2 rounded" onClick={()=>addToCart(meal)}>
                 Add To Cart
@@ -324,7 +324,10 @@ const MenuSection = () => {
                   </div>
                   <p className="mt-2 font-bold text-orange-500">Total Price: Ksh {selectedMeal.price * quantity}</p>
                   <input type="text" placeholder="Enter phone number" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} className="border p-2 w-full mt-2" />
-                  <button className="mt-4 w-full bg-orange-500 text-white p-2 rounded" onClick={handlePayment}>Confirm & Pay</button>
+                  <button className="mt-4 w-full bg-orange-500 text-white p-2 rounded" onClick={handlePayment} disabled={polling}>
+            {polling ? "Processing..." : "Confirm & Pay"}
+                    
+                  </button>
                 </>
               )}
             </div>
