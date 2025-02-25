@@ -10,6 +10,7 @@ import { db } from "@/configs/firebaseConfig";
 import { useAuth } from "@/context/AuthContext";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import JsBarcode from "jsbarcode";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
 const CartPage = () => {
   const { cart, removeFromCart,updateQuantity, clearCart } = useCartStore();
@@ -76,35 +77,111 @@ const { user } = useAuth()
       return;
     }
   
+    const orderID = `ORD-${Date.now()}`;
+    const storage = getStorage(); // Get Firebase Storage instance
+    const storageRef = ref(storage, `receipts/${orderID}.pdf`); // Storage path
+  
+    // 1️⃣ Generate Receipt PDF
+    const doc = new jsPDF();
+    const date = new Date().toLocaleString();
+    
+    const canvas = document.createElement("canvas");
+    JsBarcode(canvas, orderID, { format: "CODE128" });
+    
+    // Title
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(22);
+    doc.text("ChakulaHub Receipt", 105, 20, { align: "center" });
+
+    // Line separator
+    doc.setLineWidth(0.5);
+    doc.line(20, 25, 190, 25);
+
+    // Section: Order Details (Encased in a box)
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.rect(18, 30, 174, 40); // Draw box
+
+    doc.text(`Date:`, 22, 40);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${date}`, 50, 40);
+
+    doc.setFont("helvetica", "bold");
+    doc.text(`Order ID:`, 22, 50);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${orderID}`, 50, 50);
+
+    doc.setFont("helvetica", "bold");
+    doc.text(`Phone Number:`, 22, 60);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${phoneNumber}`, 60, 60);
+
+    // Section: Meal Details
+    doc.setFont("helvetica", "bold");
+    doc.text("Meal Details:", 22, 80);
+    doc.setFont("helvetica", "normal");
+    
+    cart.forEach((item, index) => {
+        const yOffset = 90 + index * 10;
+        doc.text(`${index + 1}. ${item.name} x${item.quantity} - Ksh ${item.price * item.quantity}`, 22, yOffset);
+    });
+    
+    // Highlight Total Price
+    doc.setFont("helvetica", "bold");
+    doc.text(`Total Price: Ksh ${totalAmount}`, 22, 90 + cart.length * 10);
+    doc.setLineWidth(0.3);
+    doc.line(20, 95 + cart.length * 10, 190, 95 + cart.length * 10);
+
+    // Centered Barcode
+    const barcodeData = canvas.toDataURL("image/png");
+    doc.addImage(barcodeData, "PNG", 55, 100 + cart.length * 10, 100, 30); // Adjust position & size
+
+    // Footer
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(12);
+    doc.text("Thank you for choosing ChakulaHub!", 105, 140 + cart.length * 10, { align: "center" });
+  
+    // 2️⃣ Convert PDF to Blob for Upload
+    const pdfBlob = new Blob([doc.output("blob")], { type: "application/pdf" });
+  
     try {
-      await Promise.all(
-        cart.map(async (item) => {
-          const orderRef = await addDoc(collection(db, "orders"), {
-            userEmail: user?.email || "Unknown User",
-            mealId: item.id,
-            mealName: item.name,
-            price: item.price * item.quantity,
-            quantity: item.quantity,
-            phoneNumber,
-            status: "pending",
-            createdAt: serverTimestamp(),
-          });
+      // 3️⃣ Upload PDF to Firebase Storage
+      await uploadBytes(storageRef, pdfBlob);
+      const receiptUrl = await getDownloadURL(storageRef); // Get the file URL
   
-          console.log(`✅ Order ${orderRef.id} placed for ${item.name}`);
-        })
-      );
+      // 4️⃣ Save Order Data to Firestore with Receipt URL
+      const orderData = {
+        userEmail: user?.email || "Unknown User",
+        userId: user?.uid || "N/A",
+        phoneNumber,
+        totalAmount,
+        status: "completed",
+        createdAt: serverTimestamp(),
+        orderID,
+        receiptUrl, // ✅ Store actual receipt URL
+        items: cart.map((item) => ({
+          mealId: item.id,
+          mealName: item.name,
+          price: item.price,
+          quantity: item.quantity,
+        })),
+      };
   
-      toast({ description: "Payment confirmed! Orders placed successfully." });
+      await addDoc(collection(db, "orders"), orderData);
+      toast({ description: "Order and receipt saved successfully!" });
   
       setTimeout(() => {
         setIsPaymentSuccessful(false);
         clearCart();
       }, 20000);
     } catch (error) {
-      console.error("❌ Error saving order:", error);
+      console.error("❌ Error saving order or receipt:", error);
       toast({ description: "Failed to save order. Please contact support." });
     }
   };
+  
+
+
   
   const handlePayment = async () => {
     if (!phoneNumber) {

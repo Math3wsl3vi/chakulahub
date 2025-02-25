@@ -115,7 +115,7 @@ const MenuSection = () => {
               price: selectedMeal.price * quantity,
               quantity,
               phoneNumber,
-              status: "pending",
+              status: "completed",
               createdAt: serverTimestamp(),
             });
 

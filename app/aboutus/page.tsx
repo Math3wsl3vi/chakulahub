@@ -5,7 +5,7 @@ import React from "react";
 const About = () => {
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-3xl font-bold text-orange-500 mb-4">About ChakulaHub</h1>
+      <h1 className="text-3xl font-bold text-orange-1 mb-4">About ChakulaHub</h1>
       <p className="text-gray-700 mb-4">
         ChakulaHub is your ultimate online meal booking platform, connecting you with your favorite meals in just a few clicks. Our mission is to provide a seamless, fast, and reliable way to satisfy your cravings without any hustle.
       </p>
