@@ -9,6 +9,7 @@ import {
   getDocs,
   runTransaction,
   serverTimestamp,
+  updateDoc,
 } from "firebase/firestore";
 import {
   Dialog,
@@ -23,6 +24,7 @@ import jsPDF from "jspdf";
 import { useCartStore } from "@/lib/store/cartStore";
 import JsBarcode from "jsbarcode";
 import Image from "next/image";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
 type Meal = {
   id: string;
@@ -48,6 +50,7 @@ const MenuSection = () => {
   const { toast } = useToast();
   const { addToCart, cart } = useCartStore();
   const [polling, setPolling] = useState(false);
+  const storage = getStorage()
 
   useEffect(() => {
     const fetchMeals = async () => {
@@ -86,7 +89,7 @@ const MenuSection = () => {
   const startPolling = (checkoutRequestID: string, mealId: string) => {
     if (polling) return;
     setPolling(true);
-
+  
     const interval = setInterval(async () => {
       try {
         const response = await fetch("/api/mpesa/status", {
@@ -94,43 +97,66 @@ const MenuSection = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ checkoutRequestID }),
         });
-
+  
         const data = await response.json();
-
+  
         if (data.status === "COMPLETED") {
           clearInterval(interval);
           setPolling(false);
           setIsPaymentSuccessful(true);
-
+  
           try {
             if (!selectedMeal) {
               toast({ description: "No meal selected. Please try again." });
               return;
             }
-
-            await addDoc(collection(db, "orders"), {
+  
+            const orderID = `ORD-${Date.now()}`;
+  
+            // ✅ Save Order Data in Firestore
+            const orderRef = await addDoc(collection(db, "orders"), {
               userEmail: user?.email || "Unknown User",
-              mealId: selectedMeal.id,
+              userId: user?.uid || "N/A",
+              phoneNumber,
+              totalAmount: selectedMeal.price * quantity,
+              status: "completed",
+              createdAt: serverTimestamp(),
+              orderID,
+              items: [
+                {
+                  mealId: selectedMeal.id,
+                  mealName: selectedMeal.name,
+                  price: selectedMeal.price,
+                  quantity,
+                },
+              ],
+            });
+  
+            // ✅ Generate and Upload PDF Receipt
+            const receiptUrl = await generateAndUploadReceipt({
+              orderId: orderID,
+              userEmail: user?.email || "Unknown User",
               mealName: selectedMeal.name,
               price: selectedMeal.price * quantity,
               quantity,
               phoneNumber,
-              status: "completed",
-              createdAt: serverTimestamp(),
             });
-
+  
+            // ✅ Update Firestore Order with Receipt URL
+            await updateDoc(orderRef, { receiptUrl });
+  
             // ✅ Reduce meal quantity in Firestore using a transaction
             const mealRef = doc(db, "meals", mealId);
             await runTransaction(db, async (transaction) => {
               const mealDoc = await transaction.get(mealRef);
               if (!mealDoc.exists()) throw "Meal does not exist!";
-
+  
               const newQuantity = mealDoc.data().quantity - quantity;
               if (newQuantity < 0) throw "Not enough stock available!";
-
+  
               transaction.update(mealRef, { quantity: newQuantity });
             });
-
+  
             toast({
               description: "Payment confirmed! Order placed successfully.",
             });
@@ -152,7 +178,83 @@ const MenuSection = () => {
       }
     }, 5000);
   };
-
+  
+  const generateAndUploadReceipt = async ({
+    orderId,
+    mealName,
+    price,
+    quantity,
+    phoneNumber,
+  }: {
+    orderId: string;
+    userEmail: string;
+    mealName: string;
+    price: number;
+    quantity: number;
+    phoneNumber: string;
+  }) => {
+    const doc = new jsPDF();
+    const date = new Date().toLocaleString();
+  
+    // Create Barcode
+    const canvas = document.createElement("canvas");
+    JsBarcode(canvas, orderId, { format: "CODE128" });
+    const barcodeData = canvas.toDataURL("image/png");
+  
+    // Title
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(22);
+    doc.text("ChakulaHub Receipt", 105, 20, { align: "center" });
+  
+    // Line separator
+    doc.setLineWidth(0.5);
+    doc.line(20, 25, 190, 25);
+  
+    // Order Details
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text(`Date:`, 22, 40);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${date}`, 50, 40);
+  
+    doc.setFont("helvetica", "bold");
+    doc.text(`Order ID:`, 22, 50);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${orderId}`, 50, 50);
+  
+    doc.setFont("helvetica", "bold");
+    doc.text(`Phone Number:`, 22, 60);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${phoneNumber}`, 60, 60);
+  
+    // Meal Details
+    doc.setFont("helvetica", "bold");
+    doc.text("Meal Details:", 22, 80);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${mealName} x${quantity} - Ksh ${price}`, 22, 90);
+  
+    // Highlight Total Price
+    doc.setFont("helvetica", "bold");
+    doc.text(`Total Price: Ksh ${price}`, 22, 100);
+    doc.line(20, 105, 190, 105);
+  
+    // Barcode
+    doc.addImage(barcodeData, "PNG", 55, 110, 100, 30);
+  
+    // Footer
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(12);
+    doc.text("Thank you for choosing ChakulaHub!", 105, 150, { align: "center" });
+  
+    // Convert PDF to Blob
+    const pdfBlob = new Blob([doc.output("blob")], { type: "application/pdf" });
+  
+    // Upload PDF to Firebase Storage
+    const storageRef = ref(storage, `receipts/${orderId}.pdf`);
+    await uploadBytes(storageRef, pdfBlob);
+    return await getDownloadURL(storageRef);
+  };
+  
   const handlePayment = async () => {
     if (!phoneNumber) {
       toast({ description: "Please enter your phone number." });
