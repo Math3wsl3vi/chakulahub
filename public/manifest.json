@@ -1,22 +1,21 @@
 {
-    "name": "ChakulaHub",
-    "short_name": "ChakulaHub",
-    "description": "Meal booking platform",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#017023",
-    "icons": [
-      {
-        "src": "/images/newlogo.png",
-        "sizes": "192x192",
-        "type": "image/png"
-      },
-      {
-        "src": "/images/newlogo.png",
-        "sizes": "512x512",
-        "type": "image/png"
-      }
-    ]
-  }
-  
+  "name": "ChakulaHub",
+  "short_name": "ChakulaHub",
+  "description": "Meal booking platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#017023",
+  "icons": [
+    {
+      "src": "/images/newlogo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "/images/newlogo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
