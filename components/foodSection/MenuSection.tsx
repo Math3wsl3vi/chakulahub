@@ -25,6 +25,7 @@ import { useCartStore } from "@/lib/store/cartStore";
 import JsBarcode from "jsbarcode";
 import Image from "next/image";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { Input } from "../ui/input";
 
 type Meal = {
   id: string;
@@ -51,6 +52,7 @@ const MenuSection = () => {
   const { addToCart, cart } = useCartStore();
   const [polling, setPolling] = useState(false);
   const storage = getStorage()
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const fetchMeals = async () => {
@@ -83,7 +85,7 @@ const MenuSection = () => {
     setSelectedMeal(meal);
     setQuantity(1);
     setIsCheckoutOpen(true);
-    setIsPaymentSuccessful(false); // Reset payment status
+    setIsPaymentSuccessful(false); 
   };
 
   const startPolling = (checkoutRequestID: string, mealId: string) => {
@@ -368,12 +370,70 @@ const MenuSection = () => {
     // Save PDF
     doc.save(`Receipt_${selectedMeal.name}_${Date.now()}.pdf`);
   };
+  const filteredMeals = meals.filter((meal) =>
+    meal.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
 
   return (
     <div>
-      <h1 className="font-poppins text-center text-2xl text-orange-1">
-        Browse The Daily Menu
-      </h1>
+      <div>
+        <h1 className="font-poppins text-center text-2xl text-orange-1">
+          Browse The Daily Menu
+        </h1>
+        <div className="flex items-center justify-center px-10 my-2">
+          <Input
+            type="text"
+            placeholder="Search meals..."
+            value={searchQuery}
+            onChange={handleSearch}
+            className="md:w-1/3 w-full p-2 border rounded-md active:ring-0 active:ring-offset-0"
+          />
+        </div>
+      </div>
+      {searchQuery && filteredMeals.length > 0 ? (
+        <div className="meal-list">
+          {filteredMeals.map((meal) => (
+            <div key={meal.id} className="border p-4 rounded-lg shadow-md mx-10 mb-3">
+              <div className="flex justify-between items-center flex-row-reverse">
+              {meal.imageUrl && (
+                        <Image
+                          src={meal.imageUrl}
+                          alt={meal.name}
+                          width={50}
+                          height={50}
+                          className="w-40 h-30 object-cover rounded-lg"
+                        />
+                      )}
+                      <div>
+                      <h3 className="text-lg font-semibold">{meal.name}</h3>
+                      <p className="text-green-600 font-bold">Ksh {meal.price}</p>
+                      </div>
+              </div>
+              
+              <div className="flex gap-5">
+                <button
+                  className="mt-2 w-full bg-orange-2 text-white p-2 rounded"
+                  onClick={() => placeOrder(meal)}
+                >
+                  Order Now
+                </button>
+                <button
+                  className="mt-2 w-full bg-orange-1 text-white p-2 rounded"
+                  onClick={() => addToCart(meal)}
+                >
+                  Add To Cart
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : searchQuery ? (
+        <p>No meals found.</p>
+      ) : null}
+
       <div className="grid grid-cols-3 px-10 mt-10">
         {["Breakfast", "Lunch", "Supper"].map((category) => (
           <div
@@ -416,7 +476,6 @@ const MenuSection = () => {
                     </span>
                   )}
 
-                 
                   <div className="flex justify-between items-center">
                     <div>
                       <h3 className="mt-2 font-semibold capitalize">
@@ -430,18 +489,15 @@ const MenuSection = () => {
                       </h3>
                     </div>
                     <div>
-                    {meal.imageUrl && (
-                    <Image
-                      src={meal.imageUrl}
-                      alt={meal.name}
-                      width={50}
-                      height={50}
-                      className="w-40 h-30 object-cover rounded-lg"
-                    />
-                  )}
-
-                      
-
+                      {meal.imageUrl && (
+                        <Image
+                          src={meal.imageUrl}
+                          alt={meal.name}
+                          width={50}
+                          height={50}
+                          className="w-40 h-30 object-cover rounded-lg"
+                        />
+                      )}
                     </div>
                   </div>
                   <div className="flex gap-5">
