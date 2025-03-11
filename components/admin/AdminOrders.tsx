@@ -16,12 +16,13 @@ type Order = {
   status: "pending" | "completed";
   createdAt?: Timestamp;
   receiptUrl?: string;
+  quantity: number;
 };
 
 const AdminOrders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const ordersPerPage = 15; // Set the number of orders per page
+  const ordersPerPage = 15; 
 
   useEffect(() => {
     const ordersRef = collection(db, "orders");
@@ -35,6 +36,7 @@ const AdminOrders = () => {
             userEmail: data.userEmail,
             UserId: data.userId,
             status: data.status,
+            quantity: data.items?.[0]?.quantity || 0,
             createdAt: data.createdAt || Timestamp.now(),
             receiptUrl: data.receiptUrl || "",
             mealName: data.items?.[0]?.mealName || "N/A", // ✅ Extract meal name
@@ -53,7 +55,7 @@ const AdminOrders = () => {
   
 
   // Pagination logic
-  const visibleOrders = orders.slice(3); // Skip the first three orders
+  const visibleOrders = orders.slice(3); 
 const totalPages = Math.ceil(visibleOrders.length / ordersPerPage);
 
 const indexOfLastOrder = currentPage * ordersPerPage;
@@ -67,6 +69,7 @@ const currentOrders = visibleOrders.slice(indexOfFirstOrder, indexOfLastOrder);
       <thead>
   <tr className="bg-gray-100">
     <th className="border p-2">Meal</th>
+    <th className="border p-2">Quantity</th>
     <th className="border p-2">User Name</th>
     <th className="border p-2">Price</th>
     <th className="border p-2">Booked Time</th>
@@ -78,6 +81,7 @@ const currentOrders = visibleOrders.slice(indexOfFirstOrder, indexOfLastOrder);
   {currentOrders.map((order) => (
     <tr key={order.id} className="border">
       <td className="border p-2">{order.mealName}</td>
+      <td className="border p-2">{order.quantity}</td>
       <td className="border p-2">{order.userEmail}</td>
       <td className="border p-2">Ksh {order.price}</td>
       <td className="border p-2">
