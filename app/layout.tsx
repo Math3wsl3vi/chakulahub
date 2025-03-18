@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/home/Navbar";
+
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/context/AuthContext";
-import SplashScreen from "@/components/SplashScreen";
+
 
 export const metadata: Metadata = {
   title: "Chakulahub",
@@ -13,21 +14,24 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html lang="en">
-      <body className="antialiased">
+      <body
+        className={`antialiased`}
+      >
         <AuthProvider>
-          <SplashScreen />
-          <div>
-            <Navbar />
-          </div>
-          <Toaster />
-          {children}
-          <div className="">
-            {/* <BottomBar /> */}
-          </div>
-        </AuthProvider>
+        <div>
+          <Navbar/>
+        </div>
+        <Toaster/>
+        {children}
+        <div className="">
+        {/* <BottomBar /> */}
+      </div>
+      </AuthProvider>
       </body>
     </html>
   );
