@@ -5,23 +5,23 @@
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#017023",
+  "background_color": "#ffffff",
   "theme_color": "#017023",
   "icons": [
     {
-      "src": "/images/newlogo.jpg",
+      "src": "/images/newlogo.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/images/newlogo.jpg",
+      "src": "/images/Chef-pana.png",
       "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/images/newlogo.jpg",
+      "src": "/images/Chef-pana.png",
       "sizes": "2048x2048",
       "type": "image/png",
       "purpose": "any maskable"
