@@ -15,7 +15,7 @@
     },
     {
       "src": "/images/newlogo.jpg",
-      "sizes": "512x512",
+      "sizes": "2048x2048",
       "type": "image/jpeg",
        "purpose": "any maskable"
     }
