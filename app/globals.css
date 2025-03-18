@@ -10,13 +10,6 @@ body {
   display: none;
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  background-color: #017023; /* Ensure background color matches splash */
-}
-
 
 @layer base {
   :root {
