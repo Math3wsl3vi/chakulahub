@@ -9,19 +9,19 @@
   "theme_color": "#017023",
   "icons": [
     {
-      "src": "/images/logo512.png",
+      "src": "/images/newlogo192.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/images/chef.png",
+      "src": "/images/newlogo512.png",
       "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/images/chef.png",
+      "src": "/images/newlogo512.png",
       "sizes": "2048x2048",
       "type": "image/png",
       "purpose": "any maskable"
