@@ -10,9 +10,10 @@ export default {
   theme: {
   	extend: {
 		fontFamily: {
-			poppins: "var(--font-poppins)",
+			poppins: ['pop','sans-serif'],
 			geist: "var(--font-geist-sans)",
 			mono: "var(--font-geist-mono)",
+			bab:['bab','sans-serif'],
 		  },
   		colors: {
 			orange: {

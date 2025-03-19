@@ -10,6 +10,21 @@ body {
   display: none;
 }
 
+@font-face {
+  font-family: 'bab';
+  src: url('/fonts/BabRegular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'pop';
+  src: url('/fonts/Poppins-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
 
 @layer base {
   :root {
