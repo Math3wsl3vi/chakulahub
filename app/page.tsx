@@ -1,12 +1,18 @@
-"use client"
+"use client";
+import { useEffect } from "react";
 import MenuSection from "@/components/foodSection/MenuSection";
 import Footer from "@/components/home/Footer";
-// import Footer from "@/components/home/Footer";
 import Hero from "@/components/home/Hero";
 import Reviews from "@/components/home/Review";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function Home() {
+  useEffect(() => {
+    if (process.env.NODE_ENV === "production" && "serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(console.error);
+    }
+  }, []);
+
 
   return (
     <ProtectedRoute>
@@ -21,12 +27,11 @@ export default function Home() {
         {/* lunch */}
         {/* dinner */}
         {/* bottom bar */}
-        {/* <Footer/> */}
         <div className="mt-10 p-4">
-        <Reviews/>
+          <Reviews />
         </div>
         <div className="mt-10">
-          <Footer/>
+          <Footer />
         </div>
       </div>
     </ProtectedRoute>
