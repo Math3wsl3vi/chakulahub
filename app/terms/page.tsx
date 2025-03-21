@@ -4,7 +4,7 @@ import React from "react";
 
 const TermsAndConditions = () => {
   return (
-    <div className="max-w-4xl mx-auto p-6 text-gray-800">
+    <div className="max-w-4xl mx-auto p-6 text-gray-800 font-bab">
       <h1 className="text-3xl font-bold text-center text-orange-1 mb-6">Terms and Conditions</h1>
       
       <p className="mb-4">Welcome to ChakulaHub! These terms and conditions outline the rules and regulations for the use of our platform.</p>

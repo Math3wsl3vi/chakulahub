@@ -91,7 +91,7 @@ const AdminMeals = () => {
   };
 
   return (
-    <div className="p-5 overflow-x-auto">
+    <div className="p-5 overflow-x-auto font-bab">
       <h1 className="text-2xl font-bold text-center">Manage Meals</h1>
       <Link href="/admin/meals/add">
         <Button className="bg-orange-1 w-full text-lg rounded-none mt-3 md:w-1/3">

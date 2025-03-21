@@ -81,7 +81,7 @@ const AddMeal = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-5 border rounded-lg">
+    <div className="max-w-md mx-auto mt-10 p-5 border rounded-lg font-bab">
       <h2 className="text-xl font-semibold mb-4">Add a Meal</h2>
       {message && (
         <p className="text-sm text-center text-green-600">{message}</p>

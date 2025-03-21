@@ -380,7 +380,7 @@ const MenuSection = () => {
   return (
     <div>
       <div>
-        <h1 className="font-poppins text-center text-2xl text-orange-1">
+        <h1 className="text-center text-2xl text-orange-1 font-bab">
           Browse The Daily Menu
         </h1>
         <div className="flex items-center justify-center px-10 my-2">
@@ -408,20 +408,20 @@ const MenuSection = () => {
                         />
                       )}
                       <div>
-                      <h3 className="text-lg font-semibold">{meal.name}</h3>
-                      <p className="text-green-600 font-bold">Ksh {meal.price}</p>
+                      <h3 className="text-lg font-semibold font-bab">{meal.name}</h3>
+                      <p className="text-green-600 font-bold font-bab">Ksh {meal.price}</p>
                       </div>
               </div>
               
               <div className="flex gap-5">
                 <button
-                  className="mt-2 w-full bg-orange-2 text-white p-2 rounded"
+                  className="mt-2 w-full bg-orange-2 text-white p-2 rounded font-bab"
                   onClick={() => placeOrder(meal)}
                 >
                   Order Now
                 </button>
                 <button
-                  className="mt-2 w-full bg-orange-1 text-white p-2 rounded"
+                  className="mt-2 w-full bg-orange-1 text-white p-2 rounded font-bab"
                   onClick={() => addToCart(meal)}
                 >
                   Add To Cart
@@ -434,7 +434,7 @@ const MenuSection = () => {
         <p>No meals found.</p>
       ) : null}
 
-      <div className="grid grid-cols-3 px-10 mt-10">
+      <div className="grid grid-cols-3 px-10 mt-10 font-bab">
         {["Breakfast", "Lunch", "Supper"].map((category) => (
           <div
             key={category}
@@ -478,13 +478,13 @@ const MenuSection = () => {
 
                   <div className="flex justify-between items-center">
                     <div>
-                      <h3 className="mt-2 font-semibold capitalize">
+                      <h3 className="mt-2 font-semibold capitalize font-bab">
                         {meal.name}
                       </h3>
-                      <p className="mt-2 font-bold text-orange-1">
+                      <p className="mt-2 font-bold text-orange-1 font-bab">
                         Ksh {meal.price}
                       </p>
-                      <h3 className="mt-2 font-semibold">
+                      <h3 className="mt-2 font-semibold font-bab">
                         {meal.quantity} Left
                       </h3>
                     </div>
@@ -502,13 +502,13 @@ const MenuSection = () => {
                   </div>
                   <div className="flex gap-5">
                     <button
-                      className="mt-2 w-full bg-orange-2 text-white p-2 rounded"
+                      className="mt-2 w-full bg-orange-2 text-white p-2 rounded font-bab"
                       onClick={() => placeOrder(meal)}
                     >
                       Order Now
                     </button>
                     <button
-                      className="mt-2 w-full bg-orange-1 text-white p-2 rounded"
+                      className="mt-2 w-full bg-orange-1 text-white p-2 rounded font-bab"
                       onClick={() => addToCart(meal)}
                     >
                       Add To Cart

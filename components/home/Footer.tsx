@@ -6,7 +6,7 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <footer className="w-full border-t shadow-sm rounded-t-md bg-white p-6">
+    <footer className="w-full border-t shadow-sm rounded-t-md bg-white p-6 font-bab">
       <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 text-gray-800">
         
         {/* Brand Section */}

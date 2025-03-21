@@ -91,7 +91,7 @@ const Navbar = () => {
 
   return (
     <>
-      <div className="w-full flex flex-row items-center justify-between px-5 py-4 border-b-2 shadow-sm">
+      <div className="w-full flex flex-row items-center justify-between px-5 py-4 border-b-2 shadow-sm font-bab">
         <Link href={"/"} className="cursor-pointer">
           <Image src="/images/logo.png" alt="logo" width={40} height={40} />
         </Link>
@@ -120,7 +120,7 @@ const Navbar = () => {
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 right-0 w-full h-full bg-white shadow-lg transform z-50 ${
+        className={`fixed top-0 right-0 w-full h-full bg-white shadow-lg transform z-50 font-bab ${
           sidebarOpen ? "translate-x-0" : "translate-x-full"
         } transition-transform duration-300 ease-in-out`}
       >

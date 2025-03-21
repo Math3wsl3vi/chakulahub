@@ -84,7 +84,7 @@ const Reviews = () => {
     const reviewsRef = collection(db, "reviews");
   
     // Set up real-time listener
-    const unsubscribe = onSnapshot(reviewsRef, (snapshot) => {
+    const unsubscribe = onSnapshot (reviewsRef, (snapshot) => {
       const reviewList: Review[] = snapshot.docs.map((doc) => {
         const reviewData = doc.data() as Review;
         const mealName = meals.find((meal) => meal.id === reviewData.mealId)?.name || "Unknown Meal"; // Use meals state
@@ -163,7 +163,7 @@ const Reviews = () => {
   return (
     <div className="md:flex md:justify-center md:items-center">
       <div className="p-6 border rounded-md md:w-1/3">
-        <h1 className="text-2xl font-bold mb-4">Meal Reviews</h1>
+        <h1 className="text-2xl font-bold mb-4 font-bab">Meal Reviews</h1>
         <div className="mb-6">
           <DropdownMenu>
             <DropdownMenuTrigger className="border p-2 w-full bg-white text-left">
@@ -194,7 +194,7 @@ const Reviews = () => {
             onChange={(e) => setReviewText(e.target.value)}
             className="border p-2 w-full mt-2 bg-white"
           />
-          <Button className="bg-orange-1 text-white px-4 py-2 rounded mt-2 w-full md:w-1/3" onClick={submitReview}>
+          <Button className="bg-orange-1 text-white px-4 py-2 rounded mt-2 w-full md:w-1/3 font-bab " onClick={submitReview}>
             Submit Review
           </Button>
         </div>
@@ -203,11 +203,11 @@ const Reviews = () => {
           <>
             {reviews.slice(0, showAll ? reviews.length : 2).map((review) => (
               <div key={review.id} className="border p-4 mb-4 rounded">
-                <p><strong>User:</strong> {review.userEmail}</p>
-                <p><strong>Meal:</strong> {review.mealName}</p>
-                <p><strong>Review:</strong> {review.reviewText}</p>
-                <p><strong>Rating:</strong> {"⭐".repeat(review.rating)}</p>
-                <p><strong>Response:</strong> {review.adminResponse || "No response yet"}</p>
+                <p className="font-bab"><strong>User:</strong> {review.userEmail}</p>
+                <p className="font-bab"><strong>Meal:</strong> {review.mealName}</p>
+                <p className="font-bab"><strong>Review:</strong> {review.reviewText}</p>
+                <p className="font-bab"><strong>Rating:</strong> {"⭐".repeat(review.rating)}</p>
+                <p className="font-bab"><strong>Response:</strong> {review.adminResponse || "No response yet"}</p>
                 {isAdmin && (
                 <div className="mt-2">
                   <Textarea
@@ -216,7 +216,7 @@ const Reviews = () => {
                     onChange={(e) => handleAdminResponseChange(review.id, e.target.value)}
                     className="border p-2 w-full bg-white"
                   />
-                  <Button className="bg-orange-1 text-white px-4 py-2 rounded mt-2" 
+                  <Button className="bg-orange-1 text-white px-4 py-2 rounded mt-2 font-bab" 
                     onClick={() => submitAdminResponse(review.id)}>
                     Submit Response
                   </Button>
@@ -224,13 +224,13 @@ const Reviews = () => {
               )}
               </div>
             ))}
-            <Button className="bg-orange-1 text-white px-4 py-2 rounded mt-2 w-full" 
+            <Button className="bg-orange-1 text-white px-4 py-2 rounded mt-2 w-full font-bab" 
               onClick={() => setShowAll(!showAll)}>
               {showAll ? "Show Less" : "View More"}
             </Button>
           </>
         ) : (
-          <p>No reviews yet.</p>
+          <p className="font-bab">No reviews yet.</p>
         )}
       </div>
     </div>

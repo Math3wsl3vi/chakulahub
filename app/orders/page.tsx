@@ -86,7 +86,7 @@ const OrdersPage = () => {
   }, [user]);
 
   return (
-    <div className="p-5">
+    <div className="p-5 font-bab">
       <h1 className="text-2xl text-center text-orange-1">Your Orders</h1>
       {loading ? (
         <p className="text-center mt-5">Loading orders...</p>
