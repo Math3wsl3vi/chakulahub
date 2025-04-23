@@ -28,90 +28,59 @@
   - Realtime Database: live updates for prescriptions and reminders  
 - **PWA**: Service worker & manifest.json integration for installable web app
 
-## 📦 Installation
 
-Clone the repository:
+## 🛠️ Installation
 
-```bash
-git clone https://github.com/math3wsl3vi/chakula-hub-project-1.git
-cd chakula-hub-project-1
+1. Clone the repository:
 
-Install dependencies:
-npm install
+   ```bash
+   git clone https://github.com/math3wsl3v/chakula-hub-project-1.git
+2. Navigate to the project directory:
 
-Set up your .env file with Firebase, M-Pesa, and other config:
-NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_MPESA_SHORTCODE=your_shortcode
-NEXT_PUBLIC_MPESA_CONSUMER_KEY=your_consumer_key
-NEXT_PUBLIC_MPESA_CONSUMER_SECRET=your_consumer_secret
+   ```bash
+   cd chakula-hub-project-1
+   
+3. Install dependencies:
 
-Start development server:
-npm run dev
+    ```bash
+    npm install
+  
+4. Set up environment variables:
+Create a .env.local file in the root directory.
+Add Firebase and M-Pesa API credentials (refer to .env.example).
 
-📲 Mobile App
-ChakulaHub includes a React Native companion app for:
-Booking meals
+5. Run the development server:
+    ```bash
+    npm run dev
 
-
-Getting reminders
-
-
-Managing meal history
-
-
-🔗 ChakulaHub Mobile App
 💸 M-Pesa Integration
-Uses Daraja API via a custom Express server
 
-
-Secure STK push flow for meal payments
-
-
-Real-time payment status updates in Firestore
-
+- Uses Daraja API via a custom Express server
+- Secure STK push flow for meal payments
+- Real-time payment status updates in Firestore
 
 🧠 State Management with Zustand
-Lightweight global store for:
 
-
-User session
-
-
-Booking state
-
-
-Real-time UI updates
-
-
-Easy to extend and debug
-
+- Lightweight global store for:
+  - User session
+  - Booking state
+  - Real-time UI updates
+- Easy to extend and debug
 
 🧾 PWA Support
-Fully installable on Android/iOS via browser
 
-
-Offline fallback and caching support
-
-
-Manifest and service worker configured for smooth performance
-
+- Fully installable on Android/iOS via browser
+- Offline fallback and caching support
+- Manifest and service worker configured for smooth performance
 
 💡 Use Cases
-University and hostel mess booking
 
-
-Hospital patient dietary tracking
-
-
-Corporate and staff meal scheduling
-
+- University and hostel mess booking
+- Hospital patient dietary tracking
+- Corporate and staff meal scheduling
 
 📄 License
+
 This project is licensed under the MIT License.
 
-Built with 🦇  by math3wsl3vi to bring smart meals to smart people.
-
-
-
+Built with 🦇  by math3wsl3vi .
