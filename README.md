@@ -16,16 +16,14 @@
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: React / Next.js + Tailwind CSS  
+- **Frontend**: React / Next.js + Tailwind CSS + Shadcn ui components 
 - **State Management**: Zustand  
 - **Backend**: Firebase (Firestore + Realtime Database)  
 - **Authentication**: Firebase Auth  
-- **Payments**: M-Pesa STK Push (via Node.js + Express backend)  
-- **Mobile App**: React Native  
+- **Payments**: M-Pesa STK Push (via Node.js + Next Api Routes)  
 - **Hosting**: Vercel / Firebase Hosting  
 - **Database**: 
   - Firestore: meal, user, and admin data  
-  - Realtime Database: live updates for prescriptions and reminders  
 - **PWA**: Service worker & manifest.json integration for installable web app
 
 
