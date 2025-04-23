@@ -1,97 +1,117 @@
-# 🚀 Delivery App
 
-A simple and efficient food delivery platform built with **Next.js, TypeScript, Firebase, Zustand, and Twilio**. This project was developed as a **1-day coding challenge** to test rapid development skills while ensuring functionality and a great user experience.
+# 🍽️ ChakulaHub
 
----
+**ChakulaHub** is a smart meal booking and management platform designed to streamline the process of reserving, organizing, and managing meals in institutions such as universities, hospitals, and organizations.
 
-## 📌 Features
+## 🚀 Features
 
-✅ **User Authentication** (Firebase Auth)  
-✅ **Browse Food Items** from various restaurants  
-✅ **Add to Cart** and manage orders  
-✅ **Update Quantity** or Remove Items  
-✅ **Order Summary with Total Price Calculation**  
-✅ **WhatsApp Order Notifications** via Twilio  
-✅ **Responsive Design** for mobile and desktop  
-
----
+- 🧑‍🍳 Admin panel for managing food items and meal schedules  
+- 📆 Users can view daily meals and book them in advance  
+- 💵 **M-Pesa STK Push integration** for seamless payments  
+- 🧠 Global state management using **Zustand**  
+- 📱 **PWA support** for offline functionality and mobile responsiveness  
+- 🔒 Secure authentication and role-based access  
+- 🔔 Real-time notifications and meal reminders  
+- 📊 Meal booking and payment analytics  
 
 ## 🛠️ Tech Stack
 
-- **Next.js** (App Router)
-- **TypeScript**
-- **Firebase** (Auth & Firestore)
-- **Zustand** (State Management)
-- **Twilio API** (WhatsApp Order Notifications)
-- **Tailwind CSS** (Styling)
+- **Frontend**: React / Next.js + Tailwind CSS  
+- **State Management**: Zustand  
+- **Backend**: Firebase (Firestore + Realtime Database)  
+- **Authentication**: Firebase Auth  
+- **Payments**: M-Pesa STK Push (via Node.js + Express backend)  
+- **Mobile App**: React Native  
+- **Hosting**: Vercel / Firebase Hosting  
+- **Database**: 
+  - Firestore: meal, user, and admin data  
+  - Realtime Database: live updates for prescriptions and reminders  
+- **PWA**: Service worker & manifest.json integration for installable web app
 
----
+## 📦 Installation
 
-## 🔧 Installation & Setup
+Clone the repository:
 
-1️⃣ Clone the repository:
 ```bash
-git clone https://github.com/yourusername/delivery-app.git
-cd delivery-app
-```
+git clone https://github.com/math3wsl3vi/chakula-hub-project-1.git
+cd chakula-hub-project-1
 
-2️⃣ Install dependencies:
-```bash
-yarn install  # or npm install
-```
+Install dependencies:
+npm install
 
-3️⃣ Set up environment variables in a `.env.local` file:
-```env
+Set up your .env file with Firebase, M-Pesa, and other config:
 NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-TWILIO_ACCOUNT_SID=your_twilio_sid
-TWILIO_AUTH_TOKEN=your_twilio_auth_token
-TWILIO_WHATSAPP_NUMBER=whatsapp:+14155238886
-MY_WHATSAPP_NUMBER=whatsapp:+2547XXXXXXXX
-```
+NEXT_PUBLIC_MPESA_SHORTCODE=your_shortcode
+NEXT_PUBLIC_MPESA_CONSUMER_KEY=your_consumer_key
+NEXT_PUBLIC_MPESA_CONSUMER_SECRET=your_consumer_secret
 
-4️⃣ Run the development server:
-```bash
-yarn dev  # or npm run dev
-```
+Start development server:
+npm run dev
 
----
+📲 Mobile App
+ChakulaHub includes a React Native companion app for:
+Booking meals
 
-## 📱 How It Works
 
-1. **User adds food items to the cart**
-2. **User enters their phone number & address**
-3. **Order is sent via WhatsApp using Twilio API**
-4. **Restaurant receives the order and processes it**
-5. **Delivery is made! 🚴‍♂️💨**
+Getting reminders
 
----
 
-## 📌 Future Improvements
+Managing meal history
 
-- ✅ Add Payment Gateway (M-Pesa, Stripe)
-- ✅ Implement Order Tracking System
-- ✅ Enhance UI/UX with better animations
-- ✅ Improve backend scalability
 
----
+🔗 ChakulaHub Mobile App
+💸 M-Pesa Integration
+Uses Daraja API via a custom Express server
 
-## 🏆 Challenge Outcome
 
-This app was built as a **1-day challenge** to test efficiency, creativity, and technical skills. The goal was to implement a **functional MVP (Minimum Viable Product)** within **24 hours** while maintaining clean, structured code.
+Secure STK push flow for meal payments
 
-🚀 **Mission Accomplished!** 💪🔥
 
----
+Real-time payment status updates in Firestore
 
-## 📝 License
 
-This project is open-source and available under the **MIT License**.
+🧠 State Management with Zustand
+Lightweight global store for:
 
----
 
-### 💡 Need Help?
-Feel free to open an issue or reach out! 😊
+User session
 
-Happy Hacking!
+
+Booking state
+
+
+Real-time UI updates
+
+
+Easy to extend and debug
+
+
+🧾 PWA Support
+Fully installable on Android/iOS via browser
+
+
+Offline fallback and caching support
+
+
+Manifest and service worker configured for smooth performance
+
+
+💡 Use Cases
+University and hostel mess booking
+
+
+Hospital patient dietary tracking
+
+
+Corporate and staff meal scheduling
+
+
+📄 License
+This project is licensed under the MIT License.
+
+Built with 🦇  by math3wsl3vi to bring smart meals to smart people.
+
+
+
