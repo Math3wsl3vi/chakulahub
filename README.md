@@ -45,7 +45,7 @@
   
 4. Set up environment variables:
 Create a .env.local file in the root directory.
-Add Firebase and M-Pesa API credentials (refer to .env.example).
+Add Firebase and M-Pesa API credentials.
 
 5. Run the development server:
     ```bash
