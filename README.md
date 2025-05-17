@@ -1,97 +1,84 @@
-# 🚀 Delivery App
 
-A simple and efficient food delivery platform built with **Next.js, TypeScript, Firebase, Zustand, and Twilio**. This project was developed as a **1-day coding challenge** to test rapid development skills while ensuring functionality and a great user experience.
+# 🍽️ ChakulaHub
 
----
+**ChakulaHub** is a smart meal booking and management platform designed to streamline the process of reserving, organizing, and managing meals in institutions such as universities, hospitals, and organizations.
 
-## 📌 Features
+## 🚀 Features
 
-✅ **User Authentication** (Firebase Auth)  
-✅ **Browse Food Items** from various restaurants  
-✅ **Add to Cart** and manage orders  
-✅ **Update Quantity** or Remove Items  
-✅ **Order Summary with Total Price Calculation**  
-✅ **WhatsApp Order Notifications** via Twilio  
-✅ **Responsive Design** for mobile and desktop  
-
----
+- 🧑‍🍳 Admin panel for managing food items and meal schedules  
+- 📆 Users can view daily meals and book them in advance  
+- 💵 **M-Pesa STK Push integration** for seamless payments  
+- 🧠 Global state management using **Zustand**  
+- 📱 **PWA support** for offline functionality and mobile responsiveness  
+- 🔒 Secure authentication and role-based access  
+- 🔔 Real-time notifications and meal reminders  
+- 📊 Meal booking and payment analytics  
 
 ## 🛠️ Tech Stack
 
-- **Next.js** (App Router)
-- **TypeScript**
-- **Firebase** (Auth & Firestore)
-- **Zustand** (State Management)
-- **Twilio API** (WhatsApp Order Notifications)
-- **Tailwind CSS** (Styling)
+- **Frontend**: React / Next.js + Tailwind CSS + Shadcn ui components 
+- **State Management**: Zustand  
+- **Backend**: Firebase (Firestore + Realtime Database)  
+- **Authentication**: Firebase Auth  
+- **Payments**: M-Pesa STK Push (via Node.js + Next Api Routes)  
+- **Hosting**: Vercel / Firebase Hosting  
+- **Database**: 
+  - Firestore: meal, user, and admin data  
+- **PWA**: Service worker & manifest.json integration for installable web app
 
----
 
-## 🔧 Installation & Setup
+## 🛠️ Installation
 
-1️⃣ Clone the repository:
-```bash
-git clone https://github.com/yourusername/delivery-app.git
-cd delivery-app
-```
+1. Clone the repository:
 
-2️⃣ Install dependencies:
-```bash
-yarn install  # or npm install
-```
+   ```bash
+   git clone https://github.com/math3wsl3v/chakula-hub-project-1.git
+2. Navigate to the project directory:
 
-3️⃣ Set up environment variables in a `.env.local` file:
-```env
-NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-TWILIO_ACCOUNT_SID=your_twilio_sid
-TWILIO_AUTH_TOKEN=your_twilio_auth_token
-TWILIO_WHATSAPP_NUMBER=whatsapp:+14155238886
-MY_WHATSAPP_NUMBER=whatsapp:+2547XXXXXXXX
-```
+   ```bash
+   cd chakula-hub-project-1
+   
+3. Install dependencies:
 
-4️⃣ Run the development server:
-```bash
-yarn dev  # or npm run dev
-```
+    ```bash
+    npm install
+  
+4. Set up environment variables:
+Create a .env.local file in the root directory.
+Add Firebase and M-Pesa API credentials.
 
----
+5. Run the development server:
+    ```bash
+    npm run dev
 
-## 📱 How It Works
+💸 M-Pesa Integration
 
-1. **User adds food items to the cart**
-2. **User enters their phone number & address**
-3. **Order is sent via WhatsApp using Twilio API**
-4. **Restaurant receives the order and processes it**
-5. **Delivery is made! 🚴‍♂️💨**
+- Uses Daraja API via a custom Express server
+- Secure STK push flow for meal payments
+- Real-time payment status updates in Firestore
 
----
+🧠 State Management with Zustand
 
-## 📌 Future Improvements
+- Lightweight global store for:
+  - User session
+  - Booking state
+  - Real-time UI updates
+- Easy to extend and debug
 
-- ✅ Add Payment Gateway (M-Pesa, Stripe)
-- ✅ Implement Order Tracking System
-- ✅ Enhance UI/UX with better animations
-- ✅ Improve backend scalability
+🧾 PWA Support
 
----
+- Fully installable on Android/iOS via browser
+- Offline fallback and caching support
+- Manifest and service worker configured for smooth performance
 
-## 🏆 Challenge Outcome
+💡 Use Cases
 
-This app was built as a **1-day challenge** to test efficiency, creativity, and technical skills. The goal was to implement a **functional MVP (Minimum Viable Product)** within **24 hours** while maintaining clean, structured code.
+- University and hostel mess booking
+- Hospital patient dietary tracking
+- Corporate and staff meal scheduling
 
-🚀 **Mission Accomplished!** 💪🔥
+📄 License
 
----
+This project is licensed under the MIT License.
 
-## 📝 License
-
-This project is open-source and available under the **MIT License**.
-
----
-
-### 💡 Need Help?
-Feel free to open an issue or reach out! 😊
-
-Happy Hacking!
+Built with 🦇  by math3wsl3vi .
