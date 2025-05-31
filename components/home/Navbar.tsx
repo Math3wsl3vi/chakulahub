@@ -120,7 +120,7 @@ const Navbar = () => {
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 right-0 w-full h-full bg-white shadow-lg transform z-50 font-bab ${
+        className={`fixed top-0 right-0 md:w-1/3 w-full h-full bg-white shadow-lg transform z-50 font-bab ${
           sidebarOpen ? "translate-x-0" : "translate-x-full"
         } transition-transform duration-300 ease-in-out`}
       >
