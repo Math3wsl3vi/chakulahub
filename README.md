@@ -2,6 +2,7 @@
 # 🍽️ ChakulaHub
 
 **ChakulaHub** is a smart meal booking and management platform designed to streamline the process of reserving, organizing, and managing meals in institutions such as universities, hospitals, and organizations.
+Upgrades coming soon
 
 ## 🚀 Features
 
