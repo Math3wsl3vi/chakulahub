@@ -8,7 +8,7 @@ import {
   sendPasswordResetEmail,
 } from "firebase/auth";
 import type { User } from "firebase/auth";
-import { auth } from "@/configs/firebaseConfig";
+import { auth, db } from "@/configs/firebaseConfig";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import {
   Card,
@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { doc, setDoc } from "firebase/firestore";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const LoginPage = () => {
   const [isLogin, setIsLogin] = useState(false);
@@ -32,6 +34,7 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [resetSuccess, setResetSuccess] = useState("");
+  const [userType, setUserType] = useState("staff");
 
   // ✅ Only navigate if user is found
   useEffect(() => {
@@ -57,6 +60,15 @@ const LoginPage = () => {
         userCredential = await signInWithEmailAndPassword(auth, email, password);
       } else {
         userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        
+        // Save additional user data to Firestore
+        const user = userCredential.user;
+        await setDoc(doc(db, "users", user.uid), {
+          name: name,
+          email: user.email,
+          userType: userType,
+          createdAt: new Date(),
+        });
       }
 
       const user: User = userCredential.user;
@@ -104,7 +116,6 @@ const LoginPage = () => {
       </div>
     );
   }
-
   return (
     <div className="flex justify-center items-center w-full h-screen">
       <Card className="w-[350px]">
@@ -118,10 +129,34 @@ const LoginPage = () => {
           <form onSubmit={handleAuth}>
             <div className="grid w-full items-center gap-4">
               {!isLogin && (
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="name">Name</Label>
-                  <Input id="name" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
-                </div>
+                <>
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="name">Name</Label>
+                    <Input id="name" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
+                  </div>
+                  
+                  <div className="flex flex-col space-y-1.5">
+                    <Label>User Type</Label>
+                    <RadioGroup 
+                      defaultValue="staff" 
+                      className="flex gap-4" 
+                      onValueChange={(value) => setUserType(value)}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="staff" id="staff" />
+                        <Label htmlFor="staff">Staff</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="trainee" id="trainee" />
+                        <Label htmlFor="trainee">Trainee</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="other" id="other" />
+                        <Label htmlFor="other">Other</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                </>
               )}
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="email">Email</Label>
