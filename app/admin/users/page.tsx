@@ -1,7 +1,7 @@
-// app/admin/users/page.tsx
+"use client";
 
-import React from "react";
-import { collection, getDocs } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
+import { collection, onSnapshot } from "firebase/firestore";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { db } from "@/configs/firebaseConfig";
 
@@ -9,15 +9,23 @@ interface User {
   id: string;
   name: string;
   email: string;
-  userType:string
+  userType: string;
 }
 
-const AdminUsersPage = async () => {
-  const snapshot = await getDocs(collection(db, "users"));
-  const users: User[] = snapshot.docs.map(doc => ({
-    id: doc.id,
-    ...(doc.data() as Omit<User, "id">),
-  }));
+const AdminUsersPage = () => {
+  const [users, setUsers] = useState<User[]>([]);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, "users"), snapshot => {
+      const fetchedUsers = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...(doc.data() as Omit<User, "id">),
+      }));
+      setUsers(fetchedUsers);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <div className="p-6 font-bab">
