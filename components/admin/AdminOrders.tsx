@@ -55,7 +55,7 @@ const AdminOrders = () => {
   
 
   // Pagination logic
-  const visibleOrders = orders.slice(3); 
+  const visibleOrders = orders.slice(0); 
 const totalPages = Math.ceil(visibleOrders.length / ordersPerPage);
 
 const indexOfLastOrder = currentPage * ordersPerPage;
