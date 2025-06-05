@@ -6,6 +6,7 @@ import {
   Timestamp,
   onSnapshot,
 } from "firebase/firestore";
+import { Button } from "../ui/button";
 
 type Order = {
   id: string;
@@ -52,6 +53,50 @@ const AdminOrders = () => {
   
     return () => unsubscribe();
   }, []);
+
+// Function to download report as CSV
+const downloadReport = () => {
+  // Apply the same slice logic as used for display
+  const reportOrders = orders.slice(3);
+  
+  // Prepare CSV headers
+  const headers = [
+    "Meal Name",
+    "Quantity",
+    "User Email",
+    "Price",
+    "Booked Time",
+    "Status",
+    "Receipt URL"
+  ].join(",");
+  
+  // Prepare CSV rows
+  const rows = reportOrders.map(order => {
+    return [
+      `"${order.mealName}"`,
+      order.quantity,
+      `"${order.userEmail}"`,
+      `Ksh ${order.price}`,
+      `"${order.createdAt ? new Date(order.createdAt.toDate()).toLocaleString() : "N/A"}"`,
+      order.status,
+      `"${order.receiptUrl || "N/A"}"`
+    ].join(",");
+  });
+  
+  // Combine headers and rows
+  const csvContent = [headers, ...rows].join("\n");
+  
+  // Create download link
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", `orders_report_${new Date().toISOString().slice(0, 10)}.csv`);
+  link.style.visibility = "hidden";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
   
 
   // Pagination logic
@@ -64,7 +109,10 @@ const currentOrders = visibleOrders.slice(indexOfFirstOrder, indexOfLastOrder);
 
   return (
     <div className="p-6 overflow-x-auto font-bab">
-      <h1 className="text-2xl font-bold mb-4">Orders Dashboard</h1>
+      <div className="flex justify-between mb-10">
+        <h1 className="text-2xl font-bold mb-4">Orders Dashboard</h1>
+      <Button onClick={downloadReport}>Download Receipt</Button>
+      </div>
       <table className="w-full border-collapse border border-gray-300 min-w-max">
       <thead>
   <tr className="bg-gray-100">
